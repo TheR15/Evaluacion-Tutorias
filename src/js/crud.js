@@ -1,11 +1,31 @@
 obtenerEntidades();
 document.addEventListener('DOMContentLoaded', function () {
     modal();
+    if (entidadSingular === 'evaluacion') {
+        eventCambiarTutor();
+        eventEliminarEvaluaciones();
+    }
 });
 
 let entidades = [];
-let filtradas = [];
 let maestros = [];
+let tutorias = [];
+let filtradas = [];
+
+function eventEliminarEvaluaciones() {
+    const btnEliminar = document.querySelector('#btn-eliminar');
+    btnEliminar.addEventListener('click', () => {
+        mostrarEntidad(editar = false, cambiar = false, eliminar = true);
+    })
+}
+
+function eventCambiarTutor() {
+    //Cambiar maestro
+    const btnCambiarTutor = document.querySelector('#btn-cambiar');
+    btnCambiarTutor.addEventListener('click', () => {
+        mostrarEntidad(editar = false, cambiar = true, eliminar = false);
+    });
+}
 
 //Busqueda
 const inputBuscar = document.querySelector('#buscar');
@@ -14,7 +34,18 @@ inputBuscar.addEventListener('input', buscarSolictud);
 function buscarSolictud(e) {
     const busqueda = e.target.value;
     if (busqueda !== '') {
-        filtradas = entidades.filter(entidad => entidad.nombre.startsWith(busqueda));
+        if (entidadSingular === 'evaluacion') {
+            filtradas = entidades.filter(entidad => {
+                const nombreCompleto = (entidad.nombreAlumno + " " + entidad.apellidosAlumno).toLowerCase();
+                return nombreCompleto.startsWith(busqueda.toLowerCase());
+            });
+        } else {
+            filtradas = entidades.filter(entidad => {
+                const nombreCompleto = (entidad.nombre + " " + entidad.apellidos).toLowerCase();
+                return nombreCompleto.startsWith(busqueda.toLowerCase());
+            });
+        }
+
         if (filtradas.length === 0) {
             //Si no existen solicitudes se muestra un mensaje
             filtradas.length = 1;
@@ -35,6 +66,7 @@ async function obtenerEntidades() {
 
         entidades = resultado.entidad;
         maestros = resultado.maestros;
+        tutorias = resultado.tutorias;
         mostrarEntidades();
 
     } catch (error) {
@@ -49,9 +81,9 @@ function modal() {
     });
 }
 
-function mostrarEntidad(editar = false, entidad = {}) {
+function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entidad = {}) {
     const modal = document.createElement('DIV');
-    modal.classList.add('absolute', 'top-0', 'left-0', 'w-full', 'h-full', 'bg-gray-600/50', 'flex', 'justify-center', 'items-center', 'modal', 'z-30');
+    modal.classList.add('absolute', 'top-0', 'left-0', 'w-full', 'h-full', 'bg-gray-600/50', 'flex', 'justify-center', 'items-center', 'z-30','fixed');
     const options = {
         semestres: [
             "Octavo Semestre",
@@ -67,8 +99,9 @@ function mostrarEntidad(editar = false, entidad = {}) {
             'Ingenieria en Sistemas Computacionales',
             'Ingenieria en Inovacion Agricola',
             'Ingenieria en Mecatronica',
-            'Ingenieria Industrias Alimentarias',
-            'Ingenieria Administracion'
+            'Ingenieria en Industrias Alimentarias',
+            'Ingenieria en Administracion',
+            'Ingenieria en Geociencias',
         ],
         grupos: [
             'A',
@@ -92,9 +125,10 @@ function mostrarEntidad(editar = false, entidad = {}) {
         <option value="${grupo}" ${entidad.grupo === grupo ? 'selected' : ''}>${grupo}</option>
     `).join('');
 
+
     if (entidadSingular === 'maestro') {
         modal.innerHTML = `
-        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top">
+        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
             <h1 id="referencia" class="text-blue-700 font-bold text-xl">Agregar maestro</h1>
             <div class="flex gap-5">
                 <div class="flex flex-col gap-2 mt-2 w-full">
@@ -121,7 +155,7 @@ function mostrarEntidad(editar = false, entidad = {}) {
     }
     if (entidadSingular === 'alumno') {
         modal.innerHTML = `
-        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top">
+        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
             <h1 id="referencia" class="text-blue-700 font-bold text-xl">Agregar alumno</h1>
             <div class="flex gap-5">
                 <div class="flex flex-col gap-2 mt-2 w-full">
@@ -137,10 +171,6 @@ function mostrarEntidad(editar = false, entidad = {}) {
                 <div class="flex flex-col gap-2 mt-2 w-full">
                     <label for"numeroControl">Numero de control</label>
                     <input id="numeroControl"type="number" value="${entidad.numeroControl ? entidad.numeroControl : ''}" name="numeroControl" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.numeroControl ? 'Ingresa el numero de control' : 'Ingresa el nuevo numero de control'}">
-                </div>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"correo">Correo</label>
-                    <input id="correo" type="text" value="${entidad.correo ? entidad.correo : ''}" name="correo" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500" placeholder="${entidad.correo ? 'Ingresa el correo' : 'Ingresa el nuevo correo'}">
                 </div>
             </div>
             <div class="flex gap-5">
@@ -179,142 +209,114 @@ function mostrarEntidad(editar = false, entidad = {}) {
         </div>
     `;
     }
-
-    if (entidadSingular === "materia") {
-        const options = {
-            semestres: [
-                "Octavo Semestre",
-                "Septimo Semestre",
-                "Sexto Semestre",
-                "Quinto Semestre",
-                "Cuarto Semestre",
-                "Tercer Semestre",
-                "Segundo Semestre",
-                "Primer Semestre"
-            ]
-        };
-        const optionsSemestre = options.semestres.map(semestre => `
-                <option value="${semestre}" ${entidad.semestre === semestre ? 'selected' : ''}>${semestre}</option>
-            `).join('');
-
-        modal.innerHTML = `
-        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top">
-        <h1 id="referencia" class="text-blue-700 font-bold text-xl">Agregar materia</h1>
-            <div class="flex gap-5">
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"nombre">Nombre</label>
-                    <input id="nombre" type="text" value="${entidad.nombre ? entidad.nombre : ''}"name="nombre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.nombre ? 'Ingresa el nuevo nombre' : 'Ingresa el nombre de la materia'}">
-                </div>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"clave">Clave</label>
-                    <input id="clave" type="text" value="${entidad.clave ? entidad.clave : ''}"name="clave" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.clave ? 'Ingresa la nueva clave' : 'Ingresa la clave'}">
-                </div>
-            </div>
-            <div class="flex flex-col gap-2 mt-2 w-full">
-                <label for"semestre">Semestre</label>
-                <select id="semestre" name="semestre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
-                    <option selected disabled value="">Selecciona el semestre</option>
-                    ${optionsSemestre}
-                </select>
-            </div>
-            <div class="flex mt-3 w-full gap-5">
-                <button id="cerrar" class="w-full px-3 py-2 bg-gray-200 hover:bg-gray-300 transition-all rounded-lg cursor-pointer font-medium">Cerrar</button>
-                <button id="submit" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg cursor-pointer font-medium text-white">${editar ? 'Editar' : 'Guardar'}</button>
-            </div>
-        </div>
-        `
-    }
-
-    if (entidadSingular === "usuario") {
-        const options = {
-            tipos: [
-                "Admin",
-                "Alumno",
-                "CT"
-            ]
-        };
-        const optionsTipo = options.tipos.map(tipo => `
-                <option value="${tipo}" ${entidad.tipo === tipo ? 'selected' : ''}>${tipo}</option>
-        `).join('');
-
-        modal.innerHTML = `
-        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top">
-        <h1 id="referencia" class="text-blue-700 font-bold text-xl">Agregar usuario</h1>
-            <div class="flex gap-5">
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"nombre">Nombre</label>
-                    <input id="nombre" type="text" value="${entidad.nombre ? entidad.nombre : ''}"name="nombre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.nombre ? 'Ingresa el nuevo nombre' : 'Ingresa el nombre del maestro'}">
-                </div>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"apellidos">Apellidos</label>
-                    <input id="apellidos" type="text" value="${entidad.apellidos ? entidad.apellidos : ''}" name="apellidos" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.apellidos ? 'Ingresa los nuevos apellidos' : 'Ingresa los apellidos'}">
-                </div>
-            </div>
-            <div class="flex flex-col gap-2 mt-2 w-full">
-                <label for"email">Email</label>
-                <input id="email" type="text" value="${entidad.email ? entidad.email : ''}" name="email" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500" placeholder="${entidad.correo ? 'Ingresa el nuevo correo' : 'Ingresa el correo'}">
-            </div>
-            <div class="flex flex-col gap-2 mt-2 w-full">
-                <label for"tipo">Tipo</label>
-                <select id="tipo" name="tipo" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
-                    <option selected disabled value="">Selecciona el tipo de usuario</option>
-                    ${optionsTipo}
-                </select>
-            </div>
-            <div class="flex mt-3 w-full gap-5">
-                <button id="cerrar" class="w-full px-3 py-2 bg-gray-200 hover:bg-gray-300 transition-all rounded-lg cursor-pointer font-medium">Cerrar</button>
-                <button id="submit" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg cursor-pointer font-medium text-white">${editar ? 'Editar' : 'Guardar'}</button>
-            </div>
-        </div>
-        `
-    }
     if (entidadSingular === "evaluacion") {
         const optionsMaestros = maestros.map(maestro => `
-            <option value="${maestro.id}">${maestro.nombre} ${maestro.apellidos}</option>
-         `).join('');
-        modal.innerHTML = `
-        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top">
-            <h1 id="referencia" class="text-blue-700 font-bold text-xl">Asignar tutor</h1>
-                <fieldset class="mt-3">
-                <legend class="font-medium text-gray-800">Información del grupo</legend>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"semestre">Semestre</label>
-                    <select id="semestre" name="semestre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
-                        <option selected disabled value="">Selecciona el semestre</option>
-                        ${optionsSemestre}
-                    </select>
-                </div>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"carrera">Carrera</label>
-                    <select id="carrera" name="carrera" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
-                        <option selected disabled value="">Selecciona la carrera</option>
-                        ${optionsCarrera}
-                    </select>
-                </div>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"grupo">Grupo</label>
-                    <select id="grupo" name="grupo" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
-                        <option selected disabled value="">Selecciona el grupo</option>
-                        ${optionsGrupo}
-                    </select>
-                </div>
-                </fieldset>
-                <fieldset class = "mt-3">
-                <legend class="font-medium text-gray-800">Tutor</legend>
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"grupo">Maestro</label>
-                    <select id="maestro" name="idMaestro" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
-                        <option selected disabled value="">Selecciona el maestro</option>
-                        ${optionsMaestros}
-                    </select>
-                </div>
-                </fieldset>
-                <div class="flex mt-3 w-full gap-5">
-                    <button id="cerrar" class="w-full px-3 py-2 bg-gray-200 hover:bg-gray-300 transition-all rounded-lg cursor-pointer font-medium">Cerrar</button>
-                    <button id="submit" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg cursor-pointer font-medium text-white">${editar ? 'Editar' : 'Guardar'}</button>
-                </div>
-        </div>
-    `;
+            <option value="${maestro.id}|${maestro.nombre}|${maestro.apellidos}" ${entidad.idMaestro === maestro.id ? 'selected' : ''}>
+                ${maestro.nombre} ${maestro.apellidos}
+            </option>
+        `).join('');
+
+        const optionsTutorias = tutorias.map(tutoria => `
+            <option value="${tutoria.tutorias}">
+                ${tutoria.tutorias}
+            </option>
+        `).join('');
+        if (cambiar) {
+            modal.innerHTML = `
+            <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
+                <h1 id="referencia" class="text-blue-700 font-bold text-xl">Cambiar Tutor</h1>
+                <p class="text-gray-600 mt-2">Asigna un nuevo tutor de un grupo</p>
+                    <fieldset class = "mt-3">
+                    <legend class="font-medium text-gray-800">Grupo</legend>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <select id="tutorias" name="tutorias" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona el grupo de tutorias</option>
+                            ${optionsTutorias}
+                        </select>
+                    </div>
+                    </fieldset>
+                    <fieldset class = "mt-3">
+                    <legend class="font-medium text-gray-800">Nuevo Tutor</legend>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <select id="maestro" name="idMaestro" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona el maestro</option>
+                            ${optionsMaestros}
+                        </select>
+                    </div>
+                    </fieldset>
+                    <div class="flex mt-3 w-full gap-5">
+                        <button id="cerrar" class="w-full px-3 py-2 bg-gray-200 hover:bg-gray-300 transition-all rounded-lg cursor-pointer font-medium">Cerrar</button>
+                        <button id="submit" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg cursor-pointer font-medium text-white">${editar ? 'Editar' : 'Guardar'}</button>
+                    </div>
+            </div>
+            `;
+        } else
+            if (eliminar) {
+                modal.innerHTML = `
+            <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
+                <h1 id="referencia" class="text-blue-700 font-bold text-xl">Eliminar Grupo</h1>
+                <p class="text-gray-600 mt-2">Si eliminas un grupo no podras revertir las evaluaciones</p>
+                    <fieldset class = "mt-3">
+                    <legend class="font-medium text-gray-800">Grupo</legend>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <select id="tutorias" name="tutorias" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona el grupo de tutorias</option>
+                            ${optionsTutorias}
+                        </select>
+                    </div>
+                    <div class="flex mt-3 w-full gap-5">
+                        <button id="cerrar" class="w-full px-3 py-2 bg-gray-200 hover:bg-gray-300 transition-all rounded-lg cursor-pointer font-medium">Cerrar</button>
+                        <button id="submit" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg cursor-pointer font-medium text-white">${editar ? 'Editar' : 'Guardar'}</button>
+                    </div>
+            </div>
+            `;
+            }
+            else {
+                modal.innerHTML = `
+            <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
+                <h1 id="referencia" class="text-blue-700 font-bold text-xl">${cambiar ? 'Cambiar' : (eliminar ? 'Eliminar' : 'Asignar')} tutor</h1>
+                <p class="text-gray-600 mt-2">Asigna un tutor a todos los alumnos que coincidan con los criterios.</p>
+                    <fieldset class="mt-3">
+                    <legend class="font-medium text-gray-800">Información del grupo</legend>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <label for"semestre">Semestre</label>
+                        <select id="semestre" name="semestre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona el semestre</option>
+                            ${optionsSemestre}
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <label for"carrera">Carrera</label>
+                        <select id="carrera" name="carrera" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona la carrera</option>
+                            ${optionsCarrera}
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <label for"grupo">Grupo</label>
+                        <select id="grupo" name="grupo" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona el grupo</option>
+                            ${optionsGrupo}
+                        </select>
+                    </div>
+                    </fieldset>
+                    <fieldset class = "mt-3">
+                    <legend class="font-medium text-gray-800">Tutor</legend>
+                    <div class="flex flex-col gap-2 mt-2 w-full">
+                        <label for"grupo">Maestro</label>
+                        <select id="maestro" name="idMaestro" class ="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
+                            <option selected disabled value="">Selecciona el maestro</option>
+                            ${optionsMaestros}
+                        </select>
+                    </div>
+                    </fieldset>
+                    <div class="flex mt-3 w-full gap-5">
+                        <button id="cerrar" class="w-full px-3 py-2 bg-gray-200 hover:bg-gray-300 transition-all rounded-lg cursor-pointer font-medium">Cerrar</button>
+                        <button id="submit" class="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 transition-all rounded-lg cursor-pointer font-medium text-white">${editar ? 'Editar' : 'Guardar'}</button>
+                    </div>
+            </div>
+        `;
+            }
     }
 
     modal.addEventListener('click', function (e) {
@@ -334,14 +336,8 @@ function mostrarEntidad(editar = false, entidad = {}) {
             if (entidadSingular === "alumno") {
                 validarAlumno(editar, entidad);
             }
-            if (entidadSingular === "materia") {
-                validarMateria(editar, entidad);
-            }
-            if (entidadSingular === 'usuario') {
-                validarUsuario(editar, entidad);
-            }
             if (entidadSingular === 'evaluacion') {
-                validarEvaluacion(editar, entidad);
+                validarEvaluacion(entidad, cambiar, eliminar);
             }
         }
     });
@@ -389,7 +385,6 @@ function validarMaestro(editar, entidad) {
         modal.remove();
     } else {
         agregar(datosEntidad, `http://localhost:3000/api/${entidadSingular}`);
-
         modal.remove();
     }
 
@@ -399,13 +394,12 @@ function validarAlumno(editar, entidad) {
     const nombre = document.querySelector('#nombre').value.trim();
     const apellidos = document.querySelector('#apellidos').value.trim();
     const numeroControl = document.querySelector('#numeroControl').value.trim();
-    const correo = document.querySelector('#correo').value.trim();
     const password = document.querySelector('#password').value.trim();
     const semestre = document.querySelector('#semestre').value.trim();
     const carrera = document.querySelector('#carrera').value.trim();
     const grupo = document.querySelector('#grupo').value.trim();
 
-    if (nombre === "" && apellidos === "" && numeroControl === "" && correo == "" &&
+    if (nombre === "" && apellidos === "" && numeroControl === ""  &&
         password === "" && semestre === "" && carrera === "" && grupo === ""
     ) {
         alerta('error', 'Todos los campos son obligatorios', document.querySelector('#referencia'));
@@ -421,10 +415,6 @@ function validarAlumno(editar, entidad) {
     }
     if (numeroControl === "") {
         alerta('error', 'Ingresa el numero de control', document.querySelector('#referencia'));
-        return;
-    }
-    if (correo === "") {
-        alerta('error', 'Ingresa el correo', document.querySelector('#referencia'));
         return;
     }
     if (password === "") {
@@ -443,6 +433,7 @@ function validarAlumno(editar, entidad) {
         alerta('error', 'Selecciona un grupo', document.querySelector('#referencia'));
         return;
     }
+    const correo = numeroControl + '@itstacambaro.edu.mx';
 
     const modal = document.querySelector('.modal');
     const datosEntidad = {
@@ -473,97 +464,53 @@ function validarAlumno(editar, entidad) {
     }
 }
 
-function validarMateria(editar, entidad) {
-    const nombre = document.querySelector('#nombre').value.trim();
-    const clave = document.querySelector('#clave').value.trim();
-    const semestre = document.querySelector('#semestre').value.trim();
-
-    if (nombre === "" && clave === "" && semestre === "") {
-        alerta('error', 'Todos los campos son obligatorios', document.querySelector('#referencia'));
-        return;
-    }
-
-    if (clave === "") {
-        alerta('error', 'La clave es obligatoria', document.querySelector('#referencia'));
-        return;
-    }
-
-    if (semestre === "") {
-        alerta('error', 'Seleccione el semestre', document.querySelector('#referencia'));
-        return;
-    }
-
+function validarEvaluacion(entidad, cambiar = false, eliminar = false) {
     const modal = document.querySelector('.modal');
-    const datosEntidad = {
-        nombre: nombre.trim(),
-        clave: clave.trim(),
-        semestre: semestre.trim()
-    }
-    if (editar) {
-        entidad.nombre = nombre.trim();
-        entidad.clave = clave.trim();
-        entidad.semestre = semestre.trim();
-        actualizarEntidad(`http://localhost:3000/api/${entidadSingular}/actualizar`, entidad);
+
+    if (cambiar) {
+        const valorSeleccionado = document.querySelector('#maestro').value;
+        const [maestro, nombreMaestro, apellidosMaestro] = valorSeleccionado.split('|');
+        const tutorias = document.querySelector('#tutorias').value.trim();
+        if (tutorias === "") {
+            alerta('error', 'Seleccione un grupo de tutorias', document.querySelector('#referencia'));
+            return;
+        }
+        if (maestro === "") {
+            alerta('error', 'Seleccione un maestro', document.querySelector('#referencia'));
+            return;
+        }
+        const datosEntidad = {
+            tutorias: tutorias,
+            maestro: maestro,
+            nombreMaestro: nombreMaestro,
+            apellidosMaestro: apellidosMaestro
+        }
+
+        confirmarCambiarTutor(datosEntidad);
         modal.remove();
-    } else {
-        agregar(datosEntidad, `http://localhost:3000/api/${entidadSingular}`);
+        return;
+    }
+
+    if (eliminar) {
+        const tutorias = document.querySelector('#tutorias').value.trim();
+        if (tutorias === "") {
+            alerta('error', 'Seleccione un grupo de tutorias', document.querySelector('#referencia'));
+            return;
+        }
+        const datosEntidad = {
+            tutorias: tutorias
+        }
+
+        confirmarEliminarEvaluaciones(datosEntidad, entidad);
         modal.remove();
-    }
-}
-
-function validarUsuario(editar, entidad) {
-    const nombre = document.querySelector('#nombre').value.trim();
-    const apellidos = document.querySelector('#apellidos').value.trim();
-    const email = document.querySelector('#email').value.trim();
-    const tipo = document.querySelector('#tipo').value.trim();
-
-    if (nombre === "" && apellidos === "" && correo === "" && tipo === "") {
-        alerta('error', 'Todos los campos son obligatorios', document.querySelector('#referencia'));
         return;
     }
 
-    if (nombre === "") {
-        alerta('error', 'El nombre es obligatorio', document.querySelector('#referencia'));
-        return;
-    }
-
-    if (apellidos === "") {
-        alerta('error', 'Ingrese los apellidos', document.querySelector('#referencia'));
-        return;
-    }
-    if (email === "") {
-        alerta('error', 'El correo es obligatorio', document.querySelector('#referencia'));
-        return;
-    }
-    if (tipo === "") {
-        alerta('error', 'Seleccione el tipo de usuario', document.querySelector('#referencia'));
-        return;
-    }
-    const modal = document.querySelector('.modal');
-    const datosEntidad = {
-        nombre: nombre,
-        apellidos: apellidos,
-        email: email,
-        tipo: tipo
-    }
-    if (editar) {
-        entidad.nombre = nombre;
-        entidad.apellidos = apellidos;
-        entidad.email = email;
-        entidad.tipo = tipo;
-        actualizarEntidad(`http://localhost:3000/api/${entidadSingular}/actualizar`, entidad);
-        modal.remove();
-    } else {
-        agregar(datosEntidad, `http://localhost:3000/api/${entidadSingular}`);
-        modal.remove();
-    }
-}
-
-function validarEvaluacion(editar, entidad) {
     const semestre = document.querySelector('#semestre').value.trim();
     const carrera = document.querySelector('#carrera').value.trim();
     const grupo = document.querySelector('#grupo').value.trim();
-    const maestro = document.querySelector('#maestro').value.trim();
+    const valorSeleccionado = document.querySelector('#maestro').value;
+    const [maestro, nombreMaestro, apellidosMaestro] = valorSeleccionado.split('|');
 
     if (semestre === "") {
         alerta('error', 'Selecciona un semestre', document.querySelector('#referencia'));
@@ -581,24 +528,52 @@ function validarEvaluacion(editar, entidad) {
         alerta('error', 'Seleccione un maestro', document.querySelector('#referencia'));
         return;
     }
-    const modal = document.querySelector('.modal');
+
+    let matchCarrera = carrera.match(/[A-Z]/g);
+    let carreraFormated = matchCarrera ? matchCarrera.join('') : '';
+    let semestreFormated = '';
+
+    switch (semestre) {
+        case "Octavo Semestre":
+            semestreFormated = "8";
+            break;
+        case "Septimo Semestre":
+            semestreFormated = "7";
+            break;
+        case "Sexto Semestre":
+            semestreFormated = "6";
+            break;
+        case "Quinto Semestre":
+            semestreFormated = "5";
+            break;
+        case "Cuarto Semestre":
+            semestreFormated = "4";
+            break;
+        case "Tercer Semestre":
+            semestreFormated = "3";
+            break;
+        case "Segundo Semestre":
+            semestreFormated = "2";
+            break;
+        case "Primer Semestre":
+            semestreFormated = "1";
+            break;
+    }
+    let tutorias = "";
+    tutorias = tutorias.concat(carreraFormated, '-', semestreFormated, '-', grupo);
+
     const datosEntidad = {
         semestre: semestre,
         carrera: carrera,
         grupo: grupo,
-        maestro: maestro
+        tutorias: { tutorias },
+        maestro: maestro,
+        nombreMaestro: nombreMaestro,
+        apellidosMaestro: apellidosMaestro
     }
-    if (editar) {
-        entidad.semestre = semestre;
-        entidad.carrera = carrera;
-        entidad.grupo = grupo;
-        entidad.maestro = maestro;
-        actualizarEntidad(`http://localhost:3000/api/${entidadSingular}/actualizar`, entidad);
-        modal.remove();
-    } else {
-        agregar(datosEntidad, `http://localhost:3000/api/${entidadSingular}`);
-        modal.remove();
-    }
+
+    agregar(datosEntidad, `http://localhost:3000/api/${entidadSingular}`);
+    modal.remove();
 }
 
 function mostrarEntidades() {
@@ -637,11 +612,11 @@ function mostrarEntidades() {
             numeroControl.textContent = entidad.numeroControl;
 
             const correo = document.createElement('TD');
-            correo.classList.add('p-3');
+            correo.classList.add('p-3','md:table-cell', 'hidden');
             correo.textContent = entidad.correo;
 
             const semestre = document.createElement('TD');
-            semestre.classList.add('p-3');
+            semestre.classList.add('p-3','md:table-cell', 'hidden');
             semestre.textContent = entidad.semestre;
 
             tr.appendChild(nombre);
@@ -650,55 +625,24 @@ function mostrarEntidades() {
             tr.appendChild(semestre);
         }
 
-        if (entidadNombre === "materias") {
-            const nombre = document.createElement('TD');
-            nombre.classList.add('p-3');
-            nombre.textContent = entidad.nombre;
-
-            const clave = document.createElement('TD');
-            clave.classList.add('p-3');
-            clave.textContent = entidad.clave;
-
-            const semestre = document.createElement('TD');
-            semestre.classList.add('p-3');
-            semestre.textContent = entidad.semestre;
-
-            tr.appendChild(nombre);
-            tr.appendChild(clave);
-            tr.appendChild(semestre);
-        }
-
-        if (entidadNombre === "usuarios") {
-            const nombre = document.createElement('TD');
-            nombre.classList.add('p-3');
-            nombre.textContent = entidad.nombre + ' ' + entidad.apellidos;
-
-            const email = document.createElement('TD');
-            email.classList.add('p-3');
-            email.textContent = entidad.email;
-
-            const tipo = document.createElement('TD');
-            tipo.classList.add('p-3');
-            tipo.textContent = entidad.tipo;
-
-            tr.appendChild(nombre);
-            tr.appendChild(email);
-            tr.appendChild(tipo);
-        }
-
         if (entidadNombre === "evaluaciones") {
             const alumno = document.createElement('TD');
             alumno.classList.add('p-3');
-            alumno.textContent = entidad.alumnoNombre + ' ' + entidad.alumnoApellidos;
+            alumno.textContent = entidad.nombreAlumno + ' ' + entidad.apellidosAlumno;
+
+            const tutorias = document.createElement('TD');
+            tutorias.classList.add('p-3');
+            tutorias.textContent = entidad.tutorias;
 
             const maestro = document.createElement('TD');
             maestro.classList.add('p-3');
-            maestro.textContent = entidad.maestroNombre + ' ' + entidad.maestroApellidos;
+            maestro.textContent = entidad.nombreMaestro + ' ' + entidad.apellidosMaestro;
 
             const estado = document.createElement('TD');
             const textEstado = document.createElement('P');
             estado.classList.add('p-3');
             estado.appendChild(textEstado);
+
             if (Number.parseInt(entidad.estado) === 0) {
                 textEstado.textContent = "Sin realizar";
                 textEstado.classList.add('bg-red-50', 'px-3', 'py-1', 'inline', 'rounded-md', 'border-1', 'border-red-200', 'text-red-600', 'font-medium');
@@ -708,36 +652,43 @@ function mostrarEntidades() {
             }
 
             tr.appendChild(alumno);
+            tr.appendChild(tutorias);
             tr.appendChild(maestro);
             tr.appendChild(estado);
         }
 
         const acciones = document.createElement('TD');
-        acciones.classList.add('flex', 'gap-3', 'items-center', 'p-3');
+        acciones.classList.add('md:flex-row', 'flex-col','flex', 'gap-3', 'items-center', 'p-3');
 
-        const btnEditar = document.createElement('BUTTON');
-        btnEditar.classList.add('cursor-pointer');
-        btnEditar.innerHTML = `
+
+        if (entidadNombre !== "evaluaciones") {
+            const btnEditar = document.createElement('BUTTON');
+            btnEditar.classList.add('cursor-pointer');
+            btnEditar.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#2835ff">
             <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
         </svg>
         `;
-        btnEditar.addEventListener('click', function () {
-            mostrarEntidad(editar = true, { ...entidad });
-        });
+            btnEditar.addEventListener('click', function () {
+                console.log(entidad);
+                mostrarEntidad(editar = true, cambiar = false, eliminar = false, { ...entidad });
+            });
 
-        const btnEliminar = document.createElement('BUTTON');
-        btnEliminar.classList.add('cursor-pointer');
-        btnEliminar.innerHTML = `
+            const btnEliminar = document.createElement('BUTTON');
+            btnEliminar.classList.add('cursor-pointer');
+            btnEliminar.innerHTML = `
         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B1A10">
             <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
         </svg>
         `;
-        btnEliminar.ondblclick = function () {
-            confirmarEliminarEntidad({ ...entidad });
+            btnEliminar.ondblclick = function () {
+                confirmarEliminarEntidad({ ...entidad });
+            }
+
+            acciones.appendChild(btnEditar);
+            acciones.appendChild(btnEliminar);
         }
-        acciones.appendChild(btnEditar);
-        acciones.appendChild(btnEliminar);
+
 
         tr.appendChild(acciones);
 
@@ -768,13 +719,16 @@ async function agregar(datosEntidad, URL) {
                 }
             });
             notyf.success(resultado.mensaje);
-
-            if (resultado.evaluaciones && Array.isArray(resultado.evaluaciones)) {
+            if (entidadSingular === 'evaluacion') {
+                console.log(datosEntidad.tutorias);
+                console.log(tutorias);
+                tutorias = [...tutorias, datosEntidad.tutorias];
+                console.log(tutorias);
                 // Agregar todos los registros de evaluaciones a entidades
                 resultado.evaluaciones.forEach(evaluacion => {
+                    evaluacion.tutorias = datosEntidad.tutorias.tutorias;
                     entidades = [...entidades, evaluacion];
                 });
-
                 // Actualizar la vista con todos los registros
                 mostrarEntidades();
             } else {
@@ -816,7 +770,6 @@ async function actualizarEntidad(URL, entidad) {
         const resultado = await respuesta.json();
 
         if (resultado.tipo === 'exito') {
-
             var notyf = new Notyf({
                 duration: 3000,
                 position: {
@@ -824,8 +777,11 @@ async function actualizarEntidad(URL, entidad) {
                     y: 'top',
                 }
             });
+
             notyf.success(resultado.mensaje);
+
             let entidadMemoria = [];
+
             for (const key in entidad) {
                 entidadMemoria.push(key);
             }
@@ -877,11 +833,106 @@ async function eliminarEntidad(entidad) {
     }
 }
 
+async function eliminarEvaluaciones(entidad) {
+    const datos = new FormData();
+    for (const key in entidad) {
+        datos.append(key, entidad[key]);
+    }
+    try {
+        const url = `http://localhost:3000/api/${entidadSingular}/eliminarEvaluaciones`;
+        const respuesta = await fetch(url, {
+            method: 'POST',
+            body: datos
+        });
+
+        const resultado = await respuesta.json();
+
+        if (resultado.tipo === 'success') {
+            var notyf = new Notyf({
+                duration: 3000,
+                position: {
+                    x: 'right',
+                    y: 'top',
+                }
+            });
+            notyf.success(resultado.mensaje);
+            entidades = entidades.filter(entidadMemoria => entidadMemoria.tutorias !==
+                entidad.tutorias);
+            mostrarEntidades();
+        }
+
+        if (resultado.tipo === 'error') {
+            var notyf = new Notyf({
+                duration: 3000,
+                position: {
+                    x: 'right',
+                    y: 'top',
+                }
+            });
+            notyf.error(resultado.mensaje);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function actualizarTutor(entidad) {
+    const datos = new FormData();
+    for (const key in entidad) {
+        datos.append(key, entidad[key]);
+    }
+
+    try {
+        const url = `http://localhost:3000/api/${entidadSingular}/actualizarTutor`
+        const respuesta = await fetch(url, {
+            method: 'POST',
+            body: datos
+        });
+
+        const resultado = await respuesta.json();
+        if (resultado.tipo === 'exito') {
+            var notyf = new Notyf({
+                duration: 3000,
+                position: {
+                    x: 'right',
+                    y: 'top',
+                }
+            });
+            notyf.success(resultado.mensaje);
+            entidades.forEach(entidadMemoria => {
+                if (entidadMemoria.tutorias === entidad.tutorias) {
+                    entidadMemoria.idMaestro = entidad.idMaestro;
+                    entidadMemoria.nombreMaestro = entidad.nombreMaestro;
+                    entidadMemoria.apellidosMaestro = entidad.apellidosMaestro;
+                }
+            });
+            mostrarEntidades();
+        }
+
+        if (resultado.tipo === 'error') {
+            var notyf = new Notyf({
+                duration: 4000,
+                position: {
+                    x: 'right',
+                    y: 'top',
+                }
+            });
+
+            notyf.error(resultado.mensaje);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 function confirmarEliminarEntidad(entidad) {
     Swal.fire({
         title: `¿Eliminar ${entidadSingular}?`,
         showCancelButton: true,
         confirmButtonText: "Eliminar",
+        text: `Estas seguro de eliminar al ${entidadSingular} ${entidad.nombre + ' ' + entidad.apellidos}`,
         cancelButtonText: 'Cancelar',
         cancelButtonColor: '#99a3a4',
         confirmButtonColor: '#000fff'
@@ -889,6 +940,40 @@ function confirmarEliminarEntidad(entidad) {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             eliminarEntidad(entidad);
+        }
+    });
+}
+
+function confirmarCambiarTutor(datosEntidad) {
+    Swal.fire({
+        title: `¿Asignar un nuevo tutor?`,
+        showCancelButton: true,
+        confirmButtonText: "Cambiar tutor",
+        text: `¿Deseas asignar el tutor ${datosEntidad.nombreMaestro + " " + datosEntidad.apellidosMaestro} al grupo ${datosEntidad.tutorias}?`,
+        cancelButtonText: 'Cancelar',
+        cancelButtonColor: '#99a3a4',
+        confirmButtonColor: '#000fff'
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            actualizarTutor(datosEntidad);
+        }
+    });
+}
+
+function confirmarEliminarEvaluaciones(datosEntidad) {
+    Swal.fire({
+        title: `¿Eliminar grupo?`,
+        showCancelButton: true,
+        confirmButtonText: "Eliminar",
+        text: `Estas seguro de eliminar el grupo ${datosEntidad.tutorias}, no podras revertir las evaluaciones`,
+        cancelButtonText: 'Cancelar',
+        cancelButtonColor: '#99a3a4',
+        confirmButtonColor: '#000fff'
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            eliminarEvaluaciones(datosEntidad);
         }
     });
 }

@@ -13,9 +13,9 @@
                     <thead>
                         <tr class="text-left text-gray-700 border-b-1 border-gray-300">
                             <th class="p-3">Nombre</th>
-                            <th class="p-3">Numero de control</th>
+                            <th class="md:table-cell hidden p-3">Numero de control</th>
                             <th class="p-3">Correo</th>
-                            <th class="p-3">Semestre</th>
+                            <th class="md:table-cell hidden p-3">Semestre</th>
                             <th class="p-3">Acciones</th>
                         </tr>
                     </thead>

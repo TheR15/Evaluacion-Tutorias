@@ -1,9 +1,9 @@
-<div class="flex justify-center items-center bg-linear-to-t from-blue-700 to-blue-600 h-screen">
+<div class="p-5 flex justify-center items-center bg-linear-to-t from-blue-700 to-blue-600 h-screen">
     <div class="grid md:grid-cols-2 bg-white w-2xl rounded-xl">
-        <div class="hidden md:flex items-center">
+        <div class="hidden md:flex items-center p-10">
             <img src="build/img/logo.webp" alt="" class="">
         </div>
-        <form method="POST" class="p-5">
+        <form method="POST" class="ml-10 md:ml-0 pt-10 pb-10 pr-10">
             <h1 class="text-2xl text-center">Bienvenido de nuevo</h1>
             <?php foreach ($alertas as $alerta) : ?>
                 <div class="bg-red-100 border-l-4 border-red-500 text-red-700 py-2 px-2 mt-3 font-bold text-center">

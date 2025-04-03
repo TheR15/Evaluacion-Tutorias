@@ -1,4 +1,4 @@
-<div id="sidebar" class="hidden md:block w-3xs bg-linear-to-t from-blue-700 to-blue-600 h-screen transition-all">
+<div id="sidebar" class="hidden lg:block w-3xs bg-linear-to-t from-blue-700 to-blue-600 h-screen transition-all sticky top-0">
     <div class="flex justify-between items-center px-5">
         <h2 class="text-center text-white font-bold uppercase p-4 m-3">Administrador</h2>
         <button class="md:hidden cursor-pointer">
@@ -6,6 +6,15 @@
                 <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z" />
             </svg>
         </button>
+    </div>
+    <hr class="mx-4 border-gray-300">
+
+    <div class="menu mt-6 cursor-pointer transition duration-400 ease-in-out p-2">
+        <a class="no-underline flex gap-3 p-3 rounded-xl hover:bg-blue-800 rounded-md transition duration-200 ease-in-out text-white font-bold " href="/admin">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+                <path d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z" />
+            </svg>
+            Inicio</a>
     </div>
     <hr class="mx-4 border-gray-300">
     <div class="menu mt-6 cursor-pointer transition duration-400 ease-in-out p-2">
@@ -23,10 +32,8 @@
         <div id="lista-registro" class="bg-white mx-4 mt-2 rounded-md transform transition-all duration-300 ease-in-out overflow-hidden max-h-0 drop-shadow-md">
             <ul>
                 <div>
-                    <li class="my-1"><a class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex"href="/maestros">Maestros</a></li>
-                    <li class="my-1"><a class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex" href="/materias">Materias</a></li>
+                    <li class="my-1"><a class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex" href="/maestros">Maestros</a></li>
                     <li class="my-1"><a class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex" href="/alumnos">Alumnos</a></li>
-                    <li class="my-1"><a class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex" href="/usuarios">Usuarios</a></li>
                 </div>
             </ul>
         </div>
@@ -52,6 +59,28 @@
             </ul>
         </div>
     </div>
+
+    <div id="menu-reportes" class="menu cursor-pointer transition duration-400 ease-in-out p-2">
+        <div class="flex gap-2 hover:bg-blue-800 p-3 mt-3 rounded-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF">
+                <path d="M320-440h320v-80H320v80Zm0 120h320v-80H320v80Zm0 120h200v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z" />
+            </svg>
+            <div class="flex justify-between w-full">
+                <h3 class="text-white font-bold">Reportes</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF" class="flecha transition-all">
+                    <path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z" />
+                </svg>
+            </div>
+        </div>
+        <div id="lista-reportes" class="bg-white mx-4 mt-2 rounded-md transform transition-all duration-300 ease-in-out overflow-hidden max-h-0">
+            <ul>
+                <div>
+                    <li class="my-1"><a href="/reporteTutor" class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex">Tutor</a></li>
+                    <li class="my-1"><a href="/reporteCarrera" class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex">Carrera</a></li>
+                    <li class="my-1"><a href="/reporteGeneral" class="hover:bg-gray-200 rounded-md p-2 transition duration-200 ease-in-out flex">General</a></li>
+                </div>
+            </ul>
+        </div>
+    </div>
 </div>
 <script src="build/js/sidebar.js"></script>
-<script src="build/js/dropdown.js"></script>

@@ -10,6 +10,10 @@ class MaestroController
 {
     public static function index(Router $router)
     {
+        session_start();
+        if(!$_SESSION['id']){
+            header('Location: /');
+        }
         $router->render('admin/maestros');
     }
 

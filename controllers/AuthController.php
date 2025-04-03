@@ -6,6 +6,7 @@ use Model\Usuario;
 use MVC\Router;
 use Google\Client;
 use Google\Service\Oauth2;
+use Model\Alumno;
 
 class AuthController
 {
@@ -33,15 +34,23 @@ class AuthController
 
             // Verificar si el usuario ya existe en tu base de datos
             $usuario = Usuario::where('email', $userInfo->email);
+            $alumno = Alumno::where('correo', $userInfo->email);
 
-            if ($usuario) {
+            if ($usuario || $alumno) {
                 if ($usuario->tipo === "Admin" || $usuario->tipo === "CT") {
                     $_SESSION['foto'] = $fotoPerfilUrl;
+                    $_SESSION['id'] = $usuario->id;
+                    $_SESSION['nombre'] = $usuario->nombre;
+                    $_SESSION['apellidos'] = $usuario->apellidos;
                     header("Location: /admin");
                 } else {
-                    header("Location: /alumno");
+                    $_SESSION['foto'] = $fotoPerfilUrl;
+                    $_SESSION['id'] = $alumno->id;
+                    $_SESSION['nombre'] = $alumno->nombre;
+                    $_SESSION['apellidos'] = $alumno->apellidos;
+                    header("Location: /evaluacion");
                 }
-            }else{
+            } else {
                 Usuario::setAlerta('error', 'No existe una cuenta con este correo');
             }
         }
@@ -50,14 +59,23 @@ class AuthController
             $auth = new Usuario($_POST);
             $alertas = $auth->validarLogin();
             $usuario = Usuario::where('email', $auth->email);
+            $alumno = Alumno::where('correo', $auth->email);
 
             //Si existe un usuario
-            if ($usuario) {
-                if ($usuario->password === $auth->password) {
-                    if ($usuario->tipo === "admin" || $usuario->tipo === "ct") {
+            if ($usuario || $alumno) {
+                if ($usuario->password === $auth->password || $alumno->password === $auth->password) {
+                    if ($usuario->tipo === "Admin" || $usuario->tipo === "CT") {
+                        //Admin
+                        $_SESSION['id'] = $usuario->id;
+                        $_SESSION['nombre'] = $usuario->nombre;
+                        $_SESSION['apellidos'] = $usuario->apellidos;
                         header("Location: /admin");
                     } else {
-                        header("Location: /alumno");
+                        session_start();
+                        $_SESSION['id'] = $alumno->id;
+                        $_SESSION['nombre'] = $alumno->nombre;
+                        $_SESSION['apellidos'] = $alumno->apellidos;
+                        header('Location: /evaluacion');
                     }
                 } else {
                     Usuario::setAlerta('error', 'Contraseña incorrecta');
@@ -73,6 +91,9 @@ class AuthController
             'client' => $client
         ]);
     }
-
-    public static function google() {}
+    
+    public static function logout(){
+        $_SESSION = [];
+        header('Location: /');
+    }
 }

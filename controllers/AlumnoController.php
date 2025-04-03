@@ -7,7 +7,10 @@ use MVC\Router;
 
 class AlumnoController{
     public static function index (Router $router){
-        
+        session_start();
+        if(!$_SESSION['id']){
+            header('Location: /');
+        }
         $router->render("admin/alumnos");
     }
     public static function mostrar()
@@ -93,5 +96,9 @@ class AlumnoController{
             ];
             echo json_encode($respuesta);
         }
+    }
+
+    public static function evaluacion(Router $router){
+        $router->render("/evaluacion/index");
     }
 }
