@@ -27,13 +27,13 @@ class MaestroController
     public static function crear()
     {
         $maestro = new Maestro($_POST);
-        $resultado = Maestro::where('numero', $maestro->numero);
+        $resultado = Maestro::where('correo', $maestro->correo);
 
-        //Ya existe un maestro con ese numero
+        //Ya existe un maestro con ese correo
         if ($resultado) {
             $respuesta = [
                 'tipo' => 'error',
-                'mensaje' => 'Ya existe un maestro con este numero'
+                'mensaje' => 'Ya existe un maestro con este correo'
             ];
             echo json_encode($respuesta);
             return;
@@ -64,7 +64,6 @@ class MaestroController
 
         $maestro = new Maestro($_POST);
         $resultado = $maestro->guardar();
-
         //Si existe un maestro para editar
         if ($resultado) {
             $resultado = $maestro->guardar();
@@ -80,7 +79,7 @@ class MaestroController
     {
 
         $maestro = new Maestro($_POST);
-        $resultado = Maestro::where('numero', $maestro->numero);
+        $resultado = Maestro::where('correo', $maestro->correo);
         
         //Si existe un maestro con ese numero
         if ($resultado) {
@@ -97,6 +96,18 @@ class MaestroController
             $respuesta = [
                 'tipo' => 'error',
                 'mensaje' => 'Ocurrio un error'
+            ];
+            echo json_encode($respuesta);
+        }
+    }
+
+    public static function eliminarMaestros(){
+        $maestros = new Maestro();
+        $resultado = $maestros->eliminarAll();
+        if($resultado){
+            $respuesta = [
+                'tipo' => 'exito',
+                'mensaje' => 'Se eliminaron todos los maestros'
             ];
             echo json_encode($respuesta);
         }

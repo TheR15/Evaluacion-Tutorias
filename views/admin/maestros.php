@@ -1,6 +1,6 @@
 <div class="flex">
     <?php include_once __DIR__ . '/../templates/sidebar.php'; ?>
-    <div id="contenido" class="bg-slate-100 w-full">
+    <div id="contenido" class="bg-white w-full">
         <?php include_once __DIR__ . '/../templates/barra.php'; ?>
         <div class="m-10 bg-white rounded-xl drop-shadow-md">
             <div class="flex justify-between items-center p-5">
@@ -13,7 +13,7 @@
                     <thead>
                         <tr class="text-left text-gray-700 border-b-1 border-gray-300">
                             <th class="p-3">Nombre</th>
-                            <th class="p-3">Numero</th>
+                            <th class="md:table-cell hidden p-3">Correo</th>
                             <th class="p-3">Acciones</th>
                         </tr>
                     </thead>
@@ -22,9 +22,11 @@
             </div>
         </div>
     </div>
+    <?php include_once __DIR__ . '/../templates/chatbot.php'; ?>
 </div>
 <script>
     const entidadNombre = 'maestros';
     const entidadSingular = 'maestro';
 </script>
 <script src="build/js/crud.js"></script>
+<script src="build/js/gemma.js"></script>

@@ -4228,7 +4228,7 @@ class PHPMailer
             $result = php_uname('n');
         }
         if (!static::isValidHost($result)) {
-            return 'localhost.localdomain';
+            return '192.168.1.83.localdomain';
         }
 
         return $result;

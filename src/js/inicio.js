@@ -4,6 +4,10 @@ let filtradas = [];
 let tutorias = [];
 let tutoriasFiltradas = [];
 
+document.addEventListener('DOMContentLoaded', () => {
+    cerrarFiltros();
+});
+
 //Busqueda
 const inputBuscar = document.querySelector('#buscar');
 inputBuscar.addEventListener('input', buscarSolictud);
@@ -80,8 +84,6 @@ function filtrarGrupo() {
     });
 }
 
-
-
 function buscarSolictud(e) {
     const busqueda = e.target.value;
     if (busqueda !== '') {
@@ -107,7 +109,6 @@ async function obtenerEntidades() {
         const url = `/api/${entidadNombre}`;
         const respuesta = await fetch(url);
         const resultado = await respuesta.json();
-
         entidades = resultado.entidad;
         tutorias = resultado.tutorias;
         mostrarEntidades();
@@ -222,4 +223,19 @@ function abrirMenuFiltros(dropMenu) {
             dropMenu.classList.add('hidden');
         }, 300);
     }
+}
+
+function cerrarFiltros(){
+    const cerrarFiltroEstado = document.querySelector('#btn-cerrar-estado');
+    const cerrarFiltroGrupo = document.querySelector('#btn-cerrar-grupo')
+
+    cerrarFiltroEstado.addEventListener('click', () =>{
+        const dropMenuEstado = document.querySelector('#drop-menu-estado');
+        dropMenuEstado.classList.add('hidden');
+    })
+
+    cerrarFiltroGrupo.addEventListener('click', ()=>{
+        const dropMenuGrupo = document.querySelector('#drop-menu-grupo')
+        dropMenuGrupo.classList.add('hidden');
+    })
 }

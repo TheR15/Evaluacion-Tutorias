@@ -3,7 +3,9 @@
 namespace Controllers;
 
 use Model\ActiveRecord;
+use Model\Email;
 use Model\Evaluacion;
+use Model\Maestro;
 use Model\Reportes;
 use MVC\Router;
 
@@ -70,7 +72,7 @@ class ReporteController
 
         $pregunta = 4;
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4);
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga');
     }
 
     public static function generarReporteCarrera()
@@ -86,7 +88,7 @@ class ReporteController
 
         $pregunta = 4;
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4);
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga');
     }
 
     public static function generarReporteGeneral()
@@ -102,6 +104,35 @@ class ReporteController
 
         $pregunta = 4;
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4);
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga');
+    }
+    public static function enviarReporte()
+    {
+        //Genera las graficas de cada pregunta
+        $pregunta = 1;
+        $rutaImagen1 = Reportes::generarGrafica($_POST, $pregunta);
+
+        $pregunta = 2;
+        $rutaImagen2 = Reportes::generarGrafica($_POST, $pregunta);
+
+        $pregunta = 3;
+        $rutaImagen3 = Reportes::generarGrafica($_POST, $pregunta);
+
+        $pregunta = 4;
+        $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
+
+        //Generar PDF
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'correo');
+        //Enviar correo
+        $tutor = Maestro::find($_POST['idTutor']);
+
+        if ($tutor) {
+            $email = new Email($tutor['correo'], $tutor['nombre']);
+            $email->enviarCorreo();
+            echo json_encode([
+                'estado' => 'success',
+                'mensaje' => 'El reporte se ha enviado correctamente'
+            ]);
+        }
     }
 }

@@ -83,7 +83,7 @@ function modal() {
 
 function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entidad = {}) {
     const modal = document.createElement('DIV');
-    modal.classList.add('absolute', 'top-0', 'left-0', 'w-full', 'h-full', 'bg-gray-600/50', 'flex', 'justify-center', 'items-center', 'z-30','fixed');
+    modal.classList.add('modal', 'absolute', 'top-0', 'left-0', 'w-full', 'h-full', 'bg-gray-600/50', 'flex', 'justify-center', 'items-center', 'z-30', 'fixed');
     const options = {
         semestres: [
             "Octavo Semestre",
@@ -94,6 +94,16 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
             "Tercer Semestre",
             "Segundo Semestre",
             "Primer Semestre"
+        ],
+        semestreNum: [
+            8,
+            7,
+            6,
+            5,
+            4,
+            3,
+            2,
+            1
         ],
         carreras: [
             'Ingenieria en Sistemas Computacionales',
@@ -128,8 +138,8 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
 
     if (entidadSingular === 'maestro') {
         modal.innerHTML = `
-        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
-            <h1 id="referencia" class="text-blue-700 font-bold text-xl">Agregar maestro</h1>
+        <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0" autocomplete="off">
+            <h1 id="referencia" class="text-blue-700 font-bold text-xl">${editar ? 'Editar' : 'Agregar'} maestro</h1>
             <div class="flex gap-5">
                 <div class="flex flex-col gap-2 mt-2 w-full">
                     <label for"nombre" class="">Nombre</label>
@@ -142,8 +152,8 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
             </div>
             <div class="flex gap-5">
                 <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"numero" class="">Numero</label>
-                    <input type="number" value="${entidad.numero ? entidad.numero : ''}" name="numero" id="numero" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.numero ? 'Ingresa el nuevo numero' : 'Ingresa el numero del maestro'}">
+                    <label for"correo" class="">Correo</label>
+                    <input type="email" value="${entidad.correo ? entidad.correo : ''}" name="correo" id="correo" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.correo ? 'Ingresa el nuevo correo' : 'Ingresa el correo del maestro'}">
                 </div>
             </div>
             <div class="flex mt-3 w-full gap-5">
@@ -156,7 +166,7 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
     if (entidadSingular === 'alumno') {
         modal.innerHTML = `
         <div id="formulario" class="w-xl bg-white opacity-100 p-5 rounded-lg scale-in-ver-top m-4 md:m-0">
-            <h1 id="referencia" class="text-blue-700 font-bold text-xl">Agregar alumno</h1>
+            <h1 id="referencia" class="text-blue-700 font-bold text-xl">${editar ? 'Editar' : 'Agregar'} alumno</h1>
             <div class="flex gap-5">
                 <div class="flex flex-col gap-2 mt-2 w-full">
                     <label for"nombre">Nombre</label>
@@ -173,17 +183,18 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
                     <input id="numeroControl"type="number" value="${entidad.numeroControl ? entidad.numeroControl : ''}" name="numeroControl" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500 " placeholder="${entidad.numeroControl ? 'Ingresa el numero de control' : 'Ingresa el nuevo numero de control'}">
                 </div>
             </div>
-            <div class="flex gap-5">
-                <div class="flex flex-col gap-2 mt-2 w-full">
-                    <label for"password">Contraseña</label>
-                    <input id="password" type="text" value="${entidad.password ? entidad.password : ''}" name="password" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500" placeholder="${entidad.password ? 'Ingresa la contraseña' : 'Ingresa la nueva contraseña'}">
-                </div>
-            </div>
             <div class="flex flex-col gap-2 mt-2 w-full">
                 <label for"semestre">Semestre</label>
                 <select id="semestre" name="semestre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
                     <option selected disabled value="">Selecciona el semestre</option>
-                    ${optionsSemestre}
+                    <option value="8" ${entidad.semestre === '8' ? 'selected' : ''}>Octavo Semestre</option>
+                    <option value="7" ${entidad.semestre === '7' ? 'selected' : ''}>Septimo Semestre</option>
+                    <option value="6" ${entidad.semestre === '6' ? 'selected' : ''}>Sexto Semestre</option>
+                    <option value="5" ${entidad.semestre === '5' ? 'selected' : ''}>Quinto Semestre</option>
+                    <option value="4" ${entidad.semestre === '4' ? 'selected' : ''}>Cuarto Semestre</option>
+                    <option value="3" ${entidad.semestre === '3' ? 'selected' : ''}>Tercer Semestre</option>
+                    <option value="2" ${entidad.semestre === '2' ? 'selected' : ''}>Segundo Semestre</option>
+                    <option value="1" ${entidad.semestre === '1' ? 'selected' : ''}>Primer Semestre</option>
                 </select>
             </div>
             <div class="flex flex-col gap-2 mt-2 w-full">
@@ -282,7 +293,14 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
                         <label for"semestre">Semestre</label>
                         <select id="semestre" name="semestre" class="w-full border-gray-300 border-1 rounded-xl py-2 px-2 focus:outline-blue-500 focus:bg-blue-50 transition duration-500 ease-in-out outline-blue-500">
                             <option selected disabled value="">Selecciona el semestre</option>
-                            ${optionsSemestre}
+                            <option value="8" ${entidad.semestre === '8' ? 'selected' : ''}>Octavo Semestre</option>
+                            <option value="7" ${entidad.semestre === '7' ? 'selected' : ''}>Septimo Semestre</option>
+                            <option value="6" ${entidad.semestre === '6' ? 'selected' : ''}>Sexto Semestre</option>
+                            <option value="5" ${entidad.semestre === '5' ? 'selected' : ''}>Quinto Semestre</option>
+                            <option value="4" ${entidad.semestre === '4' ? 'selected' : ''}>Cuarto Semestre</option>
+                            <option value="3" ${entidad.semestre === '3' ? 'selected' : ''}>Tercer Semestre</option>
+                            <option value="2" ${entidad.semestre === '2' ? 'selected' : ''}>Segundo Semestre</option>
+                            <option value="1" ${entidad.semestre === '1' ? 'selected' : ''}>Primer Semestre</option>
                         </select>
                     </div>
                     <div class="flex flex-col gap-2 mt-2 w-full">
@@ -348,9 +366,9 @@ function mostrarEntidad(editar = false, cambiar = false, eliminar = false, entid
 function validarMaestro(editar, entidad) {
     const nombre = document.querySelector('#nombre').value.trim();
     const apellidos = document.querySelector('#apellidos').value.trim();
-    const numero = document.querySelector('#numero').value.trim();
+    const correo = document.querySelector('#correo').value.trim();
 
-    if (nombre === "" | apellidos === "" || numero === "") {
+    if (nombre === "" | apellidos === "" || correo === "") {
         alerta('error', 'Todos los campos son obligatorios', document.querySelector('#referencia'));
         return;
     }
@@ -365,7 +383,7 @@ function validarMaestro(editar, entidad) {
         return;
     }
 
-    if (numero === "") {
+    if (correo === "") {
         alerta('error', 'El numero es obligatorio', document.querySelector('#referencia'));
         return;
     }
@@ -374,33 +392,31 @@ function validarMaestro(editar, entidad) {
     const datosEntidad = {
         nombre: nombre,
         apellidos: apellidos,
-        numero: numero
+        correo: correo
     }
 
     if (editar) {
         entidad.nombre = nombre;
         entidad.apellidos = apellidos;
-        entidad.numero = numero;
+        entidad.correo = correo;
         actualizarEntidad(`http://localhost:3000/api/${entidadSingular}/actualizar`, entidad);
         modal.remove();
     } else {
         agregar(datosEntidad, `http://localhost:3000/api/${entidadSingular}`);
         modal.remove();
     }
-
 }
 
 function validarAlumno(editar, entidad) {
     const nombre = document.querySelector('#nombre').value.trim();
     const apellidos = document.querySelector('#apellidos').value.trim();
     const numeroControl = document.querySelector('#numeroControl').value.trim();
-    const password = document.querySelector('#password').value.trim();
     const semestre = document.querySelector('#semestre').value.trim();
     const carrera = document.querySelector('#carrera').value.trim();
     const grupo = document.querySelector('#grupo').value.trim();
 
-    if (nombre === "" && apellidos === "" && numeroControl === ""  &&
-        password === "" && semestre === "" && carrera === "" && grupo === ""
+    if (nombre === "" && apellidos === "" && numeroControl === "" &&
+        semestre === "" && carrera === "" && grupo === ""
     ) {
         alerta('error', 'Todos los campos son obligatorios', document.querySelector('#referencia'));
         return;
@@ -417,10 +433,6 @@ function validarAlumno(editar, entidad) {
         alerta('error', 'Ingresa el numero de control', document.querySelector('#referencia'));
         return;
     }
-    if (password === "") {
-        alerta('error', 'Ingresa el password', document.querySelector('#referencia'));
-        return;
-    }
     if (semestre === "") {
         alerta('error', 'Selecciona un semestre', document.querySelector('#referencia'));
         return;
@@ -434,6 +446,7 @@ function validarAlumno(editar, entidad) {
         return;
     }
     const correo = numeroControl + '@itstacambaro.edu.mx';
+    const password = Math.floor(10000000 + Math.random() * 90000000).toString();
 
     const modal = document.querySelector('.modal');
     const datosEntidad = {
@@ -451,7 +464,6 @@ function validarAlumno(editar, entidad) {
         entidad.apellidos = apellidos;
         entidad.numeroControl = numeroControl;
         entidad.correo = correo;
-        entidad.password = password;
         entidad.semestre = semestre;
         entidad.carrera = carrera;
         entidad.grupo = grupo;
@@ -531,36 +543,9 @@ function validarEvaluacion(entidad, cambiar = false, eliminar = false) {
 
     let matchCarrera = carrera.match(/[A-Z]/g);
     let carreraFormated = matchCarrera ? matchCarrera.join('') : '';
-    let semestreFormated = '';
 
-    switch (semestre) {
-        case "Octavo Semestre":
-            semestreFormated = "8";
-            break;
-        case "Septimo Semestre":
-            semestreFormated = "7";
-            break;
-        case "Sexto Semestre":
-            semestreFormated = "6";
-            break;
-        case "Quinto Semestre":
-            semestreFormated = "5";
-            break;
-        case "Cuarto Semestre":
-            semestreFormated = "4";
-            break;
-        case "Tercer Semestre":
-            semestreFormated = "3";
-            break;
-        case "Segundo Semestre":
-            semestreFormated = "2";
-            break;
-        case "Primer Semestre":
-            semestreFormated = "1";
-            break;
-    }
     let tutorias = "";
-    tutorias = tutorias.concat(carreraFormated, '-', semestreFormated, '-', grupo);
+    tutorias = tutorias.concat(carreraFormated, '-', semestre, '-', grupo);
 
     const datosEntidad = {
         semestre: semestre,
@@ -594,12 +579,12 @@ function mostrarEntidades() {
             nombre.classList.add('p-3');
             nombre.textContent = entidad.nombre + ' ' + entidad.apellidos;
 
-            const numero = document.createElement('TD');
-            numero.classList.add('p-3');
-            numero.textContent = entidad.numero;
+            const correo = document.createElement('TD');
+            correo.classList.add('p-3', 'md:table-cell', 'hidden');
+            correo.textContent = entidad.correo;
 
             tr.appendChild(nombre);
-            tr.appendChild(numero);
+            tr.appendChild(correo);
         }
 
         if (entidadNombre === "alumnos") {
@@ -607,22 +592,17 @@ function mostrarEntidades() {
             nombre.classList.add('p-3');
             nombre.textContent = entidad.nombre + ' ' + entidad.apellidos;
 
-            const numeroControl = document.createElement('TD');
-            numeroControl.classList.add('p-3');
-            numeroControl.textContent = entidad.numeroControl;
-
             const correo = document.createElement('TD');
-            correo.classList.add('p-3','md:table-cell', 'hidden');
+            correo.classList.add('p-3', 'md:table-cell', 'hidden');
             correo.textContent = entidad.correo;
 
-            const semestre = document.createElement('TD');
-            semestre.classList.add('p-3','md:table-cell', 'hidden');
-            semestre.textContent = entidad.semestre;
+            const password = document.createElement('TD');
+            password.classList.add('p-3');
+            password.textContent = entidad.password;
 
             tr.appendChild(nombre);
-            tr.appendChild(numeroControl);
             tr.appendChild(correo);
-            tr.appendChild(semestre);
+            tr.appendChild(password);
         }
 
         if (entidadNombre === "evaluaciones") {
@@ -631,11 +611,11 @@ function mostrarEntidades() {
             alumno.textContent = entidad.nombreAlumno + ' ' + entidad.apellidosAlumno;
 
             const tutorias = document.createElement('TD');
-            tutorias.classList.add('p-3');
+            tutorias.classList.add('p-3', 'md:table-cell', 'hidden');
             tutorias.textContent = entidad.tutorias;
 
             const maestro = document.createElement('TD');
-            maestro.classList.add('p-3');
+            maestro.classList.add('p-3', 'md:table-cell', 'hidden');
             maestro.textContent = entidad.nombreMaestro + ' ' + entidad.apellidosMaestro;
 
             const estado = document.createElement('TD');
@@ -658,7 +638,7 @@ function mostrarEntidades() {
         }
 
         const acciones = document.createElement('TD');
-        acciones.classList.add('md:flex-row', 'flex-col','flex', 'gap-3', 'items-center', 'p-3');
+        acciones.classList.add('md:flex-row', 'flex-col', 'flex', 'gap-3', 'items-center', 'p-3');
 
 
         if (entidadNombre !== "evaluaciones") {
@@ -858,6 +838,7 @@ async function eliminarEvaluaciones(entidad) {
             notyf.success(resultado.mensaje);
             entidades = entidades.filter(entidadMemoria => entidadMemoria.tutorias !==
                 entidad.tutorias);
+            tutorias = tutorias.filter(tutoria => tutoria.tutorias !== entidad.tutorias);
             mostrarEntidades();
         }
 

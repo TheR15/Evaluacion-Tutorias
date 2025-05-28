@@ -17,8 +17,6 @@ class Alumno extends ActiveRecord
     public $carrera;
     public $grupo;
 
-
-
     public function __construct($args = [])
     {
         $this->id = $args['id'] ?? null;
@@ -30,5 +28,18 @@ class Alumno extends ActiveRecord
         $this->semestre = $args['semestre'] ?? '';
         $this->carrera = $args['carrera'] ?? '';
         $this->grupo = $args['grupo'] ?? '';
+    }
+
+    public static function actualizarSemestre()
+    {
+        $query = "UPDATE alumnos
+SET semestre = CASE
+    WHEN semestre = 'Egresado' THEN 'Egresado'  -- No cambia nada
+    WHEN semestre = '8' OR semestre = 8 THEN 'Egresado'  -- Cambia 8 a Egresado
+    ELSE CAST(semestre AS UNSIGNED) + 1  -- Suma 1 al resto
+END;
+";
+
+        $resultado = self::$db->query($query);
     }
 }

@@ -95,7 +95,7 @@ class Reportes
         return $rutaImagen;
     }
 
-    public static function generarPDF($datos, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4)
+    public static function generarPDF($datos, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, $tipo)
     {
         setlocale(LC_TIME, 'es_Mx.UTF-8');
         $fecha = strftime('%A, %e de %B del %Y');
@@ -133,6 +133,9 @@ class Reportes
         $dompdf = new Dompdf();
         $html = "
         <html>
+        <head>
+            <meta charset='UTF-8'>
+        </head>
         <body>
             <style>
                 .fecha{
@@ -171,13 +174,24 @@ class Reportes
             <h2 class='fecha'>$fecha</h2>
             <h2 style='font-size:15px;'>Tutor: <span style='font-weight:800;'>" . $datos['tipo'] . "</span></h2> 
             <h3>Pregunta 1</h3>
+            <p>Genera un clima de confianza que permite el logro de los propositos de la tutoria</p>
             <img class='preguntas' src='$imageSrc1' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
             <h3>Pregunta 2</h3>
+            <p>Calidad de la informacion proporcionada al tutorado</p>
             <img class='preguntas' src='$imageSrc2' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
             <h3>Pregunta 3</h3>
+            <p>Disponibilidad y calidad en la atención tutorial</p>
             <img class='preguntas' src='$imageSrc3' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
             <h3>Pregunta 4</h3>
-            <img class='preguntas' src='$imageSrc4' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>    
+            <p>Planeación y preparación en los procesos de la Tutoria</p>
+            <img class='preguntas' src='$imageSrc4' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
+            
+            <div style='margin-top:50px'>
+                <hr></hr
+                <p>Atentamente</p>
+            </div>
+
+            
         </body>
         </html>";
         $dompdf->loadHtml($html);
@@ -186,16 +200,19 @@ class Reportes
         $dompdf->render();
 
         // Output the generated PDF to Browser
-        $resultado = $dompdf->stream();
+        if ($tipo === "descarga") {
+            $dompdf->stream();
+        }
+
+        if ($tipo === "correo") {
+            $reportePDF = $dompdf->output();
+            // Guardar en el servidor
+            file_put_contents('EvaluacionTutorias.pdf', $reportePDF);
+        }
+
         unlink($rutaImagen1);
         unlink($rutaImagen2);
         unlink($rutaImagen3);
         unlink($rutaImagen4);
-
-        if($resultado){
-            return true;
-        }else{
-            return false;
-        }
     }
 }

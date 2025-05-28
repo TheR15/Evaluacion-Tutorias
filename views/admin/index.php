@@ -1,6 +1,6 @@
 <div class="flex">
     <?php include_once __DIR__ . '/../templates/sidebar.php'; ?>
-    <div id="contenido" class="bg-slate-100 w-full">
+    <div id="contenido" class="bg-white w-full">
         <?php include_once __DIR__ . '/../templates/barra.php'; ?>
         <div class="m-10 bg-white rounded-xl drop-shadow-md">
             <div class="flex justify-between items-center p-5">
@@ -21,11 +21,14 @@
                     <tbody id="tbody">
                 </table>
             </div>
+
         </div>
     </div>
+    <?php include_once __DIR__ . '/../templates/chatbot.php'; ?>
 </div>
 <script>
     const entidadNombre = 'evaluaciones';
     const entidadSingular = 'evaluacion';
 </script>
 <script src="build/js/inicio.js"></script>
+<script src="build/js/gemma.js"></script>

@@ -3,6 +3,7 @@
 namespace Controllers;
 
 use Model\Alumno;
+use Model\Email;
 use MVC\Router;
 
 class AlumnoController{
@@ -24,8 +25,6 @@ class AlumnoController{
     {
         $alumno = new Alumno($_POST);
         $resultado = Alumno::where('numeroControl', $alumno->numeroControl);
-
-        //Ya existe un maestro con ese numero
         if ($resultado) {
             $respuesta = [
                 'tipo' => 'error',
@@ -34,11 +33,16 @@ class AlumnoController{
             echo json_encode($respuesta);
             return;
         }
-        //Se guarda el registro
+        
         else {
             $resultado = $alumno->guardar();
+            //Enviamos el correo al alumno
+            $email = new Email($alumno->correo, $alumno->nombre);
+            $email->correoRegistro($alumno->password);
+
             $respuesta = [
                 'id' => $resultado['id'],
+                'password'=> $alumno->password,
                 'tipo' => 'exito',
                 'mensaje' => 'Se inserto correctamente!'
             ];
@@ -98,7 +102,23 @@ class AlumnoController{
         }
     }
 
+    public static function eliminarAlumnos(){
+        $alumnos = new Alumno();
+        $resultado = $alumnos->eliminarAll();
+        if($resultado){
+            $respuesta = [
+                'tipo' => 'exito',
+                'mensaje' => 'Se eliminaron todos los alumnos'
+            ];
+            echo json_encode($respuesta);
+        }
+    }
+
     public static function evaluacion(Router $router){
+        session_start();
+        if(!$_SESSION['id']){
+            header('Location: /');
+        }
         $router->render("/evaluacion/index");
     }
 }

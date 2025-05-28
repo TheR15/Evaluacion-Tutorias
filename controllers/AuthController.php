@@ -7,6 +7,7 @@ use MVC\Router;
 use Google\Client;
 use Google\Service\Oauth2;
 use Model\Alumno;
+use Model\Evaluacion;
 
 class AuthController
 {
@@ -35,6 +36,7 @@ class AuthController
             // Verificar si el usuario ya existe en tu base de datos
             $usuario = Usuario::where('email', $userInfo->email);
             $alumno = Alumno::where('correo', $userInfo->email);
+            $evaluacion = Evaluacion::where('idAlumno', $alumno->id);
 
             if ($usuario || $alumno) {
                 if ($usuario->tipo === "Admin" || $usuario->tipo === "CT") {
@@ -42,13 +44,16 @@ class AuthController
                     $_SESSION['id'] = $usuario->id;
                     $_SESSION['nombre'] = $usuario->nombre;
                     $_SESSION['apellidos'] = $usuario->apellidos;
+                    $_SESSION['rol'] = 'Admin';
                     header("Location: /admin");
-                } else {
+                } else if ($evaluacion) {
                     $_SESSION['foto'] = $fotoPerfilUrl;
                     $_SESSION['id'] = $alumno->id;
                     $_SESSION['nombre'] = $alumno->nombre;
                     $_SESSION['apellidos'] = $alumno->apellidos;
                     header("Location: /evaluacion");
+                } else {
+                    Usuario::setAlerta('error', 'Aun no se te ha asignado un tutor');
                 }
             } else {
                 Usuario::setAlerta('error', 'No existe una cuenta con este correo');
@@ -60,8 +65,8 @@ class AuthController
             $alertas = $auth->validarLogin();
             $usuario = Usuario::where('email', $auth->email);
             $alumno = Alumno::where('correo', $auth->email);
+            $evaluacion = Evaluacion::where('idAlumno', $alumno->id);
 
-            //Si existe un usuario
             if ($usuario || $alumno) {
                 if ($usuario->password === $auth->password || $alumno->password === $auth->password) {
                     if ($usuario->tipo === "Admin" || $usuario->tipo === "CT") {
@@ -69,13 +74,15 @@ class AuthController
                         $_SESSION['id'] = $usuario->id;
                         $_SESSION['nombre'] = $usuario->nombre;
                         $_SESSION['apellidos'] = $usuario->apellidos;
+                        $_SESSION['rol'] = 'Admin';
                         header("Location: /admin");
-                    } else {
-                        session_start();
+                    } else if ($evaluacion) {
                         $_SESSION['id'] = $alumno->id;
                         $_SESSION['nombre'] = $alumno->nombre;
                         $_SESSION['apellidos'] = $alumno->apellidos;
                         header('Location: /evaluacion');
+                    } else {
+                        Usuario::setAlerta('error', 'Aun no se te ha asignado un tutor');
                     }
                 } else {
                     Usuario::setAlerta('error', 'Contraseña incorrecta');
@@ -91,8 +98,10 @@ class AuthController
             'client' => $client
         ]);
     }
-    
-    public static function logout(){
+
+    public static function logout()
+    {
+        session_start();
         $_SESSION = [];
         header('Location: /');
     }

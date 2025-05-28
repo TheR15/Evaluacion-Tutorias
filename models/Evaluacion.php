@@ -7,7 +7,7 @@ use Exception;
 class Evaluacion extends ActiveRecord
 {
     protected static $tabla = 'evaluaciones';
-    protected static $columnasDB = ['id', 'pregunta1', 'pregunta2', 'pregunta3', 'pregunta4', 'pregunta5', 'fecha', 'estado', 'idAlumno', 'idMaestro', 'tutorias'];
+    protected static $columnasDB = ['id', 'pregunta1', 'pregunta2', 'pregunta3', 'pregunta4', 'pregunta5', 'fecha', 'estado', 'comentarios', 'idAlumno', 'idMaestro', 'tutorias'];
 
     public $id;
     public $pregunta1;
@@ -17,6 +17,7 @@ class Evaluacion extends ActiveRecord
     public $pregunta5;
     public $fecha;
     public $estado;
+    public $comentarios;
     public $idAlumno;
     public $idMaestro;
     public $tutorias;
@@ -31,6 +32,7 @@ class Evaluacion extends ActiveRecord
         $this->pregunta5 = $args['pregunta5'] ?? 0;
         $this->fecha = $args['fecha'] ?? date('Y-m-d');
         $this->estado = $args['estado'] ?? 0;
+        $this->comentarios = $args['comentarios'] ?? '';
         $this->idAlumno = $args['idAlumno'] ?? null;
         $this->idMaestro = $args['idMaestro'] ?? null;
         $this->tutorias = $args['tutorias'] ?? '';
@@ -69,6 +71,7 @@ class Evaluacion extends ActiveRecord
     maestros.id AS idMaestro, 
     maestros.nombre AS nombreMaestro,
     maestros.apellidos AS apellidosMaestro,
+    maestros.correo AS correoMaestro,
     evaluaciones.tutorias AS grupoTutorias,
     COUNT(evaluaciones.id) AS total_evaluaciones,
     SUM(CASE WHEN evaluaciones.estado = 0 THEN 1 ELSE 0 END) AS totalSinRealizar,
@@ -96,7 +99,17 @@ class Evaluacion extends ActiveRecord
     SUM(CASE WHEN evaluaciones.pregunta4 = 4 THEN 1 ELSE 0 END) AS totalOpcion4Pregunta4,
     SUM(CASE WHEN evaluaciones.pregunta4 = 3 THEN 1 ELSE 0 END) AS totalOpcion3Pregunta4,
     SUM(CASE WHEN evaluaciones.pregunta4 = 2 THEN 1 ELSE 0 END) AS totalOpcion2Pregunta4,
-    SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS totalOpcion1Pregunta4
+    SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS totalOpcion1Pregunta4,
+
+        -- Promedio general del tutor
+    ROUND((
+        SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta1 ELSE 0 END) +
+        SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta2 ELSE 0 END) +
+        SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta3 ELSE 0 END) +
+        SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta4 ELSE 0 END)
+    ) * 1.0 / (NULLIF(SUM(CASE WHEN evaluaciones.estado = 1 THEN 1 ELSE 0 END), 0) * 4), 2) AS promedioTutor
+
+
 FROM 
     maestros
 JOIN 
@@ -198,6 +211,7 @@ GROUP BY
     SUM(CASE WHEN evaluaciones.pregunta4 = 3 THEN 1 ELSE 0 END) AS p4_op3,
     SUM(CASE WHEN evaluaciones.pregunta4 = 2 THEN 1 ELSE 0 END) AS p4_op2,
     SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS p4_op1
+    
 FROM 
     evaluaciones
 JOIN 

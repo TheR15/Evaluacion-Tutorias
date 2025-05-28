@@ -4,13 +4,13 @@ namespace Controllers;
 
 use Model\ActiveRecord;
 use Model\Alumno;
+use Model\Email;
 use Model\Evaluacion;
 use Model\Maestro;
 use MVC\Router;
 
 class EvaluacionController
 {
-
     public static function index(Router $router)
     {
         session_start();
@@ -59,6 +59,13 @@ class EvaluacionController
     public static function actualizar()
     {
         $evaluacion = new Evaluacion($_POST);
+
+        $alumno = Alumno::where('id', $evaluacion->idAlumno);
+
+        $email = new Email($alumno->correo, $alumno->nombre);
+
+        $email->correoEvaluacionRealizada();
+
         $resultado = $evaluacion->guardar();
         if ($resultado) {
             ActiveRecord::enviarRespuesta('exito', 'La evaluacion se envio correctamente');
@@ -152,8 +159,20 @@ class EvaluacionController
         }
 
         $router->render('/evaluacion/preguntas', [
-            'evaluacion' => $evaluacion
+            'evaluacion' => $evaluacion,
+            'maestro' => $maestro
         ]);
     }
 
+    public static function eliminarEvaluacionesAll(){
+        $evaluaciones = new Evaluacion();
+        $resultado = $evaluaciones->eliminarAll();
+        if($resultado){
+            $respuesta = [
+                'tipo' => 'exito',
+                'mensaje' => 'Se eliminaron todas las evaluaciones'
+            ];
+            echo json_encode($respuesta);
+        }
+    }
 }

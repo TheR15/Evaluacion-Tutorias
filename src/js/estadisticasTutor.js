@@ -9,6 +9,7 @@ let opcion3 = '';
 let opcion2 = '';
 let opcion1 = '';
 let tutorSeleccionado;
+let tutorSeleccionadoId;
 let grafica = '';
 
 obtenerDatosTutores();
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
   cambiarPregunta();
   cambiarTutor();
   generarPDF();
+  enviarReporte();
 });
 
 async function obtenerDatosTutores() {
@@ -34,7 +36,6 @@ async function obtenerDatosTutores() {
 
 function mostrarTutores() {
   const selectTutores = document.querySelector('#select-tutores');
-
   tutores.forEach(tutor => {
     const option = document.createElement('OPTION');
     option.id = tutor.idMaestro;
@@ -53,24 +54,27 @@ function cambiarTutor() {
   const totalAlumnos = document.querySelector('#totalAlumnos');
   const totalRealizadas = document.querySelector('#totalRealizadas');
   const totalSinRealizar = document.querySelector('#totalSinRealizar');
-  const btnGenerarReporte = document.querySelector('#btn-generar-reporte');
+  const opcionesReporte = document.querySelector('#opciones-reporte');
+  const promedioTutor = document.querySelector('#promedioTutor');
 
   selectTutores.addEventListener('change', (e) => {
     const tutorSelect = e.target.value;
     containerPreguntas.classList.remove('hidden');
     preguntaDefault.selected = true;
     containerTotales.classList.remove('hidden');
-    btnGenerarReporte.classList.remove('hidden');
+    opcionesReporte.classList.remove('hidden');
 
     tutores.forEach(tutor => {
       if (tutorSelect === tutor.nombreMaestro + ' ' + tutor.apellidosMaestro) {
         tituloGrafica.textContent = tutor.nombreMaestro + ' ' + tutor.apellidosMaestro;
         grupoTutorias.textContent = tutor.grupoTutorias;
         totalAlumnos.textContent = tutor.total_evaluaciones;
-        totalRealizadas.textContent = tutor.totalRealizadas
+        totalRealizadas.textContent = tutor.totalRealizadas;
         totalSinRealizar.textContent = tutor.totalSinRealizar;
+        promedioTutor.textContent = tutor.promedioTutor;
 
         tutorSeleccionado = tutorSelect;
+        tutorSeleccionadoId = tutor.idMaestro;
 
         pregunta1 = Number.parseInt(tutor.totalPregunta1) || 0;
         pregunta2 = Number.parseInt(tutor.totalPregunta2) || 0;
@@ -140,13 +144,18 @@ function cambiarPregunta() {
 function generarPDF() {
   const btnGenerarReporte = document.querySelector('#btn-generar-reporte');
   btnGenerarReporte.addEventListener('click', () => {
-    console.log(tutorSeleccionado);
     enviarDatos();
   });
 }
 
-async function enviarDatos() {
+function enviarReporte() {
+  const btnEnviarReporte = document.querySelector('#btn-enviar-reporte');
+  btnEnviarReporte.addEventListener('click', () => {
+    enviarDatosReporte();
+  })
+}
 
+async function enviarDatos() {
   const datos = new FormData();
   datos.append('tipo', tutorSeleccionado);
   datos.append('totalOpcion5Pregunta1', totalOpcion5Pregunta1);
@@ -154,7 +163,6 @@ async function enviarDatos() {
   datos.append('totalOpcion3Pregunta1', totalOpcion3Pregunta1);
   datos.append('totalOpcion2Pregunta1', totalOpcion2Pregunta1);
   datos.append('totalOpcion1Pregunta1', totalOpcion1Pregunta1);
-
   datos.append('totalOpcion5Pregunta2', totalOpcion5Pregunta2);
   datos.append('totalOpcion4Pregunta2', totalOpcion4Pregunta2);
   datos.append('totalOpcion3Pregunta2', totalOpcion3Pregunta2);
@@ -225,9 +233,61 @@ async function enviarDatos() {
 
   } catch (error) {
     console.log(error);
-    // Asegurarse de remover el overlay si hay error
-    if (overlay) overlay.remove();
-    if (style) style.remove();
+  }
+}
+
+async function enviarDatosReporte() {
+  const datos = new FormData();
+  datos.append('tipo', tutorSeleccionado);
+
+  datos.append('idTutor', tutorSeleccionadoId);
+  datos.append('totalOpcion5Pregunta1', totalOpcion5Pregunta1);
+  datos.append('totalOpcion4Pregunta1', totalOpcion4Pregunta1);
+  datos.append('totalOpcion3Pregunta1', totalOpcion3Pregunta1);
+  datos.append('totalOpcion2Pregunta1', totalOpcion2Pregunta1);
+  datos.append('totalOpcion1Pregunta1', totalOpcion1Pregunta1);
+
+  datos.append('totalOpcion5Pregunta2', totalOpcion5Pregunta2);
+  datos.append('totalOpcion4Pregunta2', totalOpcion4Pregunta2);
+  datos.append('totalOpcion3Pregunta2', totalOpcion3Pregunta2);
+  datos.append('totalOpcion2Pregunta2', totalOpcion2Pregunta2);
+  datos.append('totalOpcion1Pregunta2', totalOpcion1Pregunta2);
+
+  datos.append('totalOpcion5Pregunta3', totalOpcion5Pregunta3);
+  datos.append('totalOpcion4Pregunta3', totalOpcion4Pregunta3);
+  datos.append('totalOpcion3Pregunta3', totalOpcion3Pregunta3);
+  datos.append('totalOpcion2Pregunta3', totalOpcion2Pregunta3);
+  datos.append('totalOpcion1Pregunta3', totalOpcion1Pregunta3);
+
+  datos.append('totalOpcion5Pregunta4', totalOpcion5Pregunta4);
+  datos.append('totalOpcion4Pregunta4', totalOpcion4Pregunta4);
+  datos.append('totalOpcion3Pregunta4', totalOpcion3Pregunta4);
+  datos.append('totalOpcion2Pregunta4', totalOpcion2Pregunta4);
+  datos.append('totalOpcion1Pregunta4', totalOpcion1Pregunta4);
+
+  try {
+    const url = `/api/enviarReporte`;
+    const respuesta = await fetch(url, {
+      method: 'POST',
+      body: datos
+    });
+
+    const resultado = await respuesta.json();
+    if (resultado.estado === 'success') {
+      var notyf = new Notyf({
+        duration: 3000,
+        position: {
+          x: 'right',
+          y: 'top',
+        }
+      });
+      notyf.success('El reporte se ha enviado correctamente.');
+    } else {
+      notyf.error('El reporte se ha enviado correctamente.');
+    }
+
+  } catch (error) {
+    console.log(error);
   }
 }
 

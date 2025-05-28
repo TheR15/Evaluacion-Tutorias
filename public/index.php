@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../includes/app.php';
 
+use Controllers\AdminController;
 use Controllers\AlumnoController;
 use Controllers\AuthController;
 use Controllers\EvaluacionController;
@@ -9,6 +10,7 @@ use Controllers\MaestroController;
 use Controllers\MateriaController;
 use Controllers\ReporteController;
 use Controllers\UsuarioController;
+use Model\Evaluacion;
 use MVC\Router;
 
 $router = new Router();
@@ -18,8 +20,11 @@ $router->get('/', [AuthController::class, 'login']);
 $router->post('/', [AuthController::class, 'login']);
 $router->get('/logout', [AuthController::class, 'logout']);
 
+
 //Panel principal del administrador
 $router->get('/admin', [EvaluacionController::class, 'index']);
+$router->get('/reestablecer', [AdminController::class, 'reestablecer']);
+$router->post('/api/semestre/actualizar', [AdminController::class, 'actualizar']);
 
 //CRUD de maestros
 $router->get('/maestros', [MaestroController::class, 'index']);
@@ -58,6 +63,15 @@ $router->get('/api/general', [ReporteController::class, 'obtenerDatosGeneral']);
 $router->post('/api/reporte/tutor', [ReporteController::class, 'generarReporteTutor']);
 $router->post('/api/reporte/carrera', [ReporteController::class, 'generarReporteCarrera']);
 $router->post('/api/reporte/general', [ReporteController::class, 'generarReporteGeneral']);
+$router->post('/api/enviarReporte', [ReporteController::class, 'enviarReporte']);
+
+//Eliminar registros
+$router->get('/api/alumnos/eliminar', [AlumnoController::class, 'eliminarAlumnos']);
+$router->get('/api/maestros/eliminar', [MaestroController::class, 'eliminarMaestros']);
+$router->get('/api/evaluaciones/eliminar', [EvaluacionController::class, 'eliminarEvaluacionesAll']);
+$router->get('/api/reestablecer', [AdminController::class, 'reestablecerAll']);
+//Actualizar semestre
+
 
 // Comprueba y valida las rutas, que existan y les asigna las funciones del Controlador
 $router->comprobarRutas();

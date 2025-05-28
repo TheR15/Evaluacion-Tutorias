@@ -145,7 +145,23 @@ class ActiveRecord {
         return !empty($resultado) ? new static($resultado[0]) : null;
     }
 
-    
+    public function eliminarAll(){
+        $query = "DELETE FROM " . static::$tabla;
+        $resultado = self::$db->query($query);
+        return $resultado;
+    }
+
+    public static function reestablecer(){
+        $queryAlumnos = "DELETE FROM alumnos";
+        $queryMaestros = "DELETE FROM maestros";
+        $resultadoAlumnos = self::$db->query($queryAlumnos);
+        $resultadoMaestros = self::$db->query($queryMaestros);
+
+        if($resultadoAlumnos && $resultadoMaestros){
+            return true;
+        }
+    }
+
     public static function enviarRespuesta($tipo, $mensaje, $datosAdicionales = [])
     {
         $respuesta = array_merge([

@@ -7,34 +7,31 @@ let valorPregunta1 = '';
 let valorPregunta2 = '';
 let valorPregunta3 = '';
 let valorPregunta4 = '';
+let comentarios = '';
 
 function cargarPreguntas() {
     const pregunta1 = document.querySelectorAll('[name="pregunta1"]');
     pregunta1.forEach(opcion => {
         opcion.addEventListener('input', (e) => {
             valorPregunta1 = e.target.value;
-            console.log(valorPregunta1);
         });
     });
     const pregunta2 = document.querySelectorAll('[name="pregunta2"]');
     pregunta2.forEach(opcion => {
         opcion.addEventListener('input', (e) => {
             valorPregunta2 = e.target.value;
-            console.log(valorPregunta2);
         });
     });
     const pregunta3 = document.querySelectorAll('[name="pregunta3"]');
     pregunta3.forEach(opcion => {
         opcion.addEventListener('input', (e) => {
             valorPregunta3 = e.target.value;
-            console.log(valorPregunta3);
         });
     });
     const pregunta4 = document.querySelectorAll('[name="pregunta4"]');
     pregunta4.forEach(opcion => {
         opcion.addEventListener('input', (e) => {
             valorPregunta4 = e.target.value;
-            console.log(valorPregunta4);
         });
     });
 }
@@ -97,6 +94,7 @@ function validar() {
     let respuesta2 = Number.parseInt(valorPregunta2);
     let respuesta3 = Number.parseInt(valorPregunta3);
     let respuesta4 = Number.parseInt(valorPregunta4);
+    comentarios = document.querySelector('#comentarios').value;
 
     const respuestas = {
         id: idNuevo,
@@ -104,6 +102,7 @@ function validar() {
         pregunta2: respuesta2,
         pregunta3: respuesta3,
         pregunta4: respuesta4,
+        comentarios: comentarios,
         estado: 1,
         idAlumno: idAlumno,
         idMaestro: idMaestro,
