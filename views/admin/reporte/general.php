@@ -43,6 +43,12 @@
                             </svg>Total sin realizar</h3>
                         <label for="" id="totalSinRealizar" class="text-red-600 font-bold"></label>
                     </div>
+                    <div class="flex justify-between py-2 items-center bg-blue-50 px-3 py-1 rounded-md border-1 border-blue-200 text-blue-600 font-medium">
+                            <h3 class="flex items-centerc gap-2"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#0000F5">
+                                    <path d="m136-240-56-56 296-298 160 160 208-206H640v-80h240v240h-80v-104L536-320 376-480 136-240Z" />
+                                </svg>Promedio General</h3>
+                            <label for="" id="promedio" class="text-blue-600 font-bold"></label>
+                        </div>
                 </div>
                 <div class="">
                         <button id="btn-generar-reporte" class="mt-5 flex justify-center gap-2 w-full bg-blue-600 px-3 py-2 rounded-xl text-white font-bold cursor-pointer hover:bg-blue-700 hover:scale-110 transition-all">

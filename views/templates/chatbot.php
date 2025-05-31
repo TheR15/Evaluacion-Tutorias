@@ -3,7 +3,7 @@
         <img src="build/img/icon_gemmini.webp" alt="">
     </button>
 
-    <div id="chat-gemma" class="flex flex-col gap-3 hidden bg-white p-5 w-md drop-shadow-xl rounded-md">
+    <div id="chat-gemma" class="w-full md:w-md flex flex-col gap-3 hidden bg-white p-5 drop-shadow-2xl rounded-md">
         <div class="flex justify-between items-center">
             <h1 class="text-blue-700 font-medium text-xl">Bienvenido a gemini</h1>
             <button id="cerrar-gemma" class="cursor-pointer"><svg id="icono-enviar" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#999999">

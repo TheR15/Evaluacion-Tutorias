@@ -1,5 +1,6 @@
 obtenerTutores();
 let carreras = [];
+let promedio = 0;
 let grafica;
 let carreraSeleccionada;
 document.addEventListener('DOMContentLoaded', function () {
@@ -31,6 +32,7 @@ function cambiarCarrera() {
     const preguntaDefault = document.querySelector('#pregunta-default');
     const tituloGrafica = document.querySelector('#titulo-grafica');
     const btnGenerarReporte = document.querySelector('#btn-generar-reporte');
+    const promedioCarrera = document.querySelector('#promedio');
 
     selectCarreras.addEventListener('change', (e) => {
         containerTotales.classList.remove('hidden');
@@ -45,8 +47,10 @@ function cambiarCarrera() {
                 totalAlumnos.textContent = carrera.total_alumnos;
                 totalRealizadas.textContent = carrera.totalRealizadas;
                 totalSinRealizar.textContent = carrera.NoRealizadas;
+                promedioCarrera.textContent = carrera.promedio;
 
                 carreraSeleccionada = e.target.value;
+                promedio = carrera.promedio;
 
                 pregunta1 = Number.parseInt(carrera.totalPregunta1) || 0;
                 pregunta2 = Number.parseInt(carrera.totalPregunta2) || 0;
@@ -122,6 +126,7 @@ function generarPDF() {
 async function enviarDatos() {
     const datos = new FormData();
     datos.append('tipo', carreraSeleccionada);
+    datos.append('promedio', promedio);
     datos.append('totalOpcion5Pregunta1', totalOpcion5Pregunta1);
     datos.append('totalOpcion4Pregunta1', totalOpcion4Pregunta1);
     datos.append('totalOpcion3Pregunta1', totalOpcion3Pregunta1);

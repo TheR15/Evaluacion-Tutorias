@@ -80,6 +80,10 @@ class Evaluacion extends ActiveRecord
     SUM(evaluaciones.pregunta2) AS totalPregunta2,
     SUM(evaluaciones.pregunta3) AS totalPregunta3,
     SUM(evaluaciones.pregunta4) AS totalPregunta4,
+
+        -- Comentarios del tutor
+    GROUP_CONCAT(DISTINCT evaluaciones.comentarios SEPARATOR ' || ') AS comentarios,
+    
     SUM(CASE WHEN evaluaciones.pregunta1 = 5 THEN 1 ELSE 0 END) AS totalOpcion5Pregunta1,
     SUM(CASE WHEN evaluaciones.pregunta1 = 4 THEN 1 ELSE 0 END) AS totalOpcion4Pregunta1,
     SUM(CASE WHEN evaluaciones.pregunta1 = 3 THEN 1 ELSE 0 END) AS totalOpcion3Pregunta1,
@@ -101,14 +105,13 @@ class Evaluacion extends ActiveRecord
     SUM(CASE WHEN evaluaciones.pregunta4 = 2 THEN 1 ELSE 0 END) AS totalOpcion2Pregunta4,
     SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS totalOpcion1Pregunta4,
 
-        -- Promedio general del tutor
+
     ROUND((
         SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta1 ELSE 0 END) +
         SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta2 ELSE 0 END) +
         SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta3 ELSE 0 END) +
         SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta4 ELSE 0 END)
-    ) * 1.0 / (NULLIF(SUM(CASE WHEN evaluaciones.estado = 1 THEN 1 ELSE 0 END), 0) * 4), 2) AS promedioTutor
-
+    ) * 1.0 / (NULLIF(SUM(CASE WHEN evaluaciones.estado = 1 THEN 1 ELSE 0 END), 0) * 4), 2) AS promedio
 
 FROM 
     maestros
@@ -160,7 +163,16 @@ ORDER BY
     SUM(CASE WHEN evaluaciones.pregunta4 = 4 THEN 1 ELSE 0 END) AS p4_op4,
     SUM(CASE WHEN evaluaciones.pregunta4 = 3 THEN 1 ELSE 0 END) AS p4_op3,
     SUM(CASE WHEN evaluaciones.pregunta4 = 2 THEN 1 ELSE 0 END) AS p4_op2,
-    SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS p4_op1
+    SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS p4_op1,
+
+        -- Promedio general de la carrera
+    ROUND((
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta1 ELSE 0 END) +
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta2 ELSE 0 END) +
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta3 ELSE 0 END) +
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta4 ELSE 0 END)
+    ) * 10.0 / (NULLIF(SUM(CASE WHEN evaluaciones.estado = 1 THEN 1 ELSE 0 END), 0) * 4 * 5), 2) AS promedio
+
 FROM 
     evaluaciones
 JOIN 
@@ -210,7 +222,14 @@ GROUP BY
     SUM(CASE WHEN evaluaciones.pregunta4 = 4 THEN 1 ELSE 0 END) AS p4_op4,
     SUM(CASE WHEN evaluaciones.pregunta4 = 3 THEN 1 ELSE 0 END) AS p4_op3,
     SUM(CASE WHEN evaluaciones.pregunta4 = 2 THEN 1 ELSE 0 END) AS p4_op2,
-    SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS p4_op1
+    SUM(CASE WHEN evaluaciones.pregunta4 = 1 THEN 1 ELSE 0 END) AS p4_op1,
+
+    ROUND((
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta1 ELSE 0 END) +
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta2 ELSE 0 END) +
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta3 ELSE 0 END) +
+    SUM(CASE WHEN evaluaciones.estado = 1 THEN evaluaciones.pregunta4 ELSE 0 END)
+    ) * 10.0 / (NULLIF(SUM(CASE WHEN evaluaciones.estado = 1 THEN 1 ELSE 0 END), 0) * 4 * 5), 2) AS promedio
     
 FROM 
     evaluaciones

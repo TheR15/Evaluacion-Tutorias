@@ -11,6 +11,8 @@ let opcion1 = '';
 let tutorSeleccionado;
 let tutorSeleccionadoId;
 let grafica = '';
+let promedio = 0;
+let comentarios = '';
 
 obtenerDatosTutores();
 document.addEventListener('DOMContentLoaded', function () {
@@ -71,11 +73,13 @@ function cambiarTutor() {
         totalAlumnos.textContent = tutor.total_evaluaciones;
         totalRealizadas.textContent = tutor.totalRealizadas;
         totalSinRealizar.textContent = tutor.totalSinRealizar;
-        promedioTutor.textContent = tutor.promedioTutor;
-
+        promedioTutor.textContent = tutor.promedio;
+        
         tutorSeleccionado = tutorSelect;
         tutorSeleccionadoId = tutor.idMaestro;
-
+        promedio = tutor.promedio;
+        comentarios = tutor.comentarios;
+        
         pregunta1 = Number.parseInt(tutor.totalPregunta1) || 0;
         pregunta2 = Number.parseInt(tutor.totalPregunta2) || 0;
         pregunta3 = Number.parseInt(tutor.totalPregunta3) || 0;
@@ -158,6 +162,8 @@ function enviarReporte() {
 async function enviarDatos() {
   const datos = new FormData();
   datos.append('tipo', tutorSeleccionado);
+  datos.append('promedio', promedio);
+  datos.append('comentarios', comentarios);
   datos.append('totalOpcion5Pregunta1', totalOpcion5Pregunta1);
   datos.append('totalOpcion4Pregunta1', totalOpcion4Pregunta1);
   datos.append('totalOpcion3Pregunta1', totalOpcion3Pregunta1);
@@ -207,12 +213,11 @@ async function enviarDatos() {
         }
     `;
     document.head.appendChild(style);
-
     overlay.appendChild(spinner);
     overlay.appendChild(mensaje);
     document.body.appendChild(overlay);
 
-    const url = `/api/reporte/tutor`;
+    const url = `http://localhost:3000/api/reporte/tutor`;
     const respuesta = await fetch(url, {
       method: 'POST',
       body: datos
@@ -239,7 +244,8 @@ async function enviarDatos() {
 async function enviarDatosReporte() {
   const datos = new FormData();
   datos.append('tipo', tutorSeleccionado);
-
+  datos.append('promedio', promedio);
+  datos.append('comentarios', comentarios);
   datos.append('idTutor', tutorSeleccionadoId);
   datos.append('totalOpcion5Pregunta1', totalOpcion5Pregunta1);
   datos.append('totalOpcion4Pregunta1', totalOpcion4Pregunta1);
@@ -266,11 +272,45 @@ async function enviarDatosReporte() {
   datos.append('totalOpcion1Pregunta4', totalOpcion1Pregunta4);
 
   try {
-    const url = `/api/enviarReporte`;
+const overlay = document.createElement('div');
+    overlay.classList.add('fixed', 'top-0', 'left-0', 'w-full', 'h-full', 'flex', 'flex-col', 'justify-center', 'items-center', 'z-9999', 'text-white', 'text-xl', 'font-bold');
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+
+    const mensaje = document.createElement('div');
+    mensaje.textContent = 'Generando reporte y enviando...';
+
+    const spinner = document.createElement('div');
+    spinner.style.border = '5px solid #f3f3f3';
+    spinner.style.borderTop = '5px solid #3498db';
+    spinner.style.borderRadius = '50%';
+    spinner.style.width = '50px';
+    spinner.style.height = '50px';
+    spinner.style.animation = 'spin 1s linear infinite';
+    spinner.style.marginBottom = '20px';
+
+    // Agregar animación CSS para el spinner
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+    overlay.appendChild(spinner);
+    overlay.appendChild(mensaje);
+    document.body.appendChild(overlay);
+
+    const url = `http://localhost:3000/api/enviarReporte`;
     const respuesta = await fetch(url, {
       method: 'POST',
       body: datos
     });
+
+    //Remover overlay
+    overlay.remove();
+    style.remove();
+
 
     const resultado = await respuesta.json();
     if (resultado.estado === 'success') {

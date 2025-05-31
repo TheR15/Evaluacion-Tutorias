@@ -95,7 +95,7 @@ class Reportes
         return $rutaImagen;
     }
 
-    public static function generarPDF($datos, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, $tipo)
+    public static function generarPDF($datos, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, $metodo, $tipo)
     {
         setlocale(LC_TIME, 'es_Mx.UTF-8');
         $fecha = strftime('%A, %e de %B del %Y');
@@ -172,7 +172,8 @@ class Reportes
             </div>
             <h2 class='fecha' style='font-size:15px;'>Instituto Tecnologico Superior de Tacambaro</h2>
             <h2 class='fecha'>$fecha</h2>
-            <h2 style='font-size:15px;'>Tutor: <span style='font-weight:800;'>" . $datos['tipo'] . "</span></h2> 
+            <h2 style='font-size:15px;'>$tipo: <span style='font-weight:800;'>" . $datos['tipo'] . "</span></h2>
+            <h2 style='font-size:15px;'>Promedio: <span style='font-weight:800;'>" . $datos['promedio'] . "</span></h2> 
             <h3>Pregunta 1</h3>
             <p>Genera un clima de confianza que permite el logro de los propositos de la tutoria</p>
             <img class='preguntas' src='$imageSrc1' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
@@ -184,14 +185,21 @@ class Reportes
             <img class='preguntas' src='$imageSrc3' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
             <h3>Pregunta 4</h3>
             <p>Planeación y preparación en los procesos de la Tutoria</p>
-            <img class='preguntas' src='$imageSrc4' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>
-            
-            <div style='margin-top:50px'>
-                <hr></hr
-                <p>Atentamente</p>
-            </div>
+            <img class='preguntas' src='$imageSrc4' alt='Imagen de ejemplo' style='max-width: 100%; height: auto; display: block; margin: 0 auto;'>";
 
-            
+        if($tipo === 'Tutor'){
+            $html .= "
+            <h3>Comentarios de los alumnos</h3>
+            <p>". $datos['comentarios'] . "</p>
+            ";
+        }
+
+        $html .= "
+            <div style='margin-top:150px; text-align: center;'>
+                <hr style='width:250px;'></hr
+                <p style=''>Atentamente</p>
+                <p style=''>MTI. Adrian Silviano Mandujano Reguera</p>
+            </div>
         </body>
         </html>";
         $dompdf->loadHtml($html);
@@ -200,11 +208,11 @@ class Reportes
         $dompdf->render();
 
         // Output the generated PDF to Browser
-        if ($tipo === "descarga") {
+        if ($metodo === "descarga") {
             $dompdf->stream();
         }
 
-        if ($tipo === "correo") {
+        if ($metodo === "correo") {
             $reportePDF = $dompdf->output();
             // Guardar en el servidor
             file_put_contents('EvaluacionTutorias.pdf', $reportePDF);

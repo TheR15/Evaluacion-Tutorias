@@ -72,7 +72,7 @@ class ReporteController
 
         $pregunta = 4;
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga');
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga', 'Tutor');
     }
 
     public static function generarReporteCarrera()
@@ -88,7 +88,7 @@ class ReporteController
 
         $pregunta = 4;
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga');
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga', 'Carrera');
     }
 
     public static function generarReporteGeneral()
@@ -104,7 +104,7 @@ class ReporteController
 
         $pregunta = 4;
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga');
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'descarga', 'Reporte');
     }
     public static function enviarReporte()
     {
@@ -122,8 +122,9 @@ class ReporteController
         $rutaImagen4 = Reportes::generarGrafica($_POST, $pregunta);
 
         //Generar PDF
-        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'correo');
+        Reportes::generarPDF($_POST, $rutaImagen1, $rutaImagen2, $rutaImagen3, $rutaImagen4, 'correo', 'Tutor');
         //Enviar correo
+
         $tutor = Maestro::find($_POST['idTutor']);
 
         if ($tutor) {

@@ -1,5 +1,6 @@
 let general = [];
 let grafica;
+let promedio = 0;
 
 obtenerGeneral();
 document.addEventListener('DOMContentLoaded', function () {
@@ -24,11 +25,15 @@ function mostrarDatos() {
     const totalAlumnos = document.querySelector('#totalAlumnos');
     const totalRealizadas = document.querySelector('#totalRealizadas');
     const totalSinRealizar = document.querySelector('#totalSinRealizar');
+    const promedioGeneral = document.querySelector('#promedio');
 
     general.forEach(general => {
         totalAlumnos.textContent = general.totalEvaluaciones;
         totalRealizadas.textContent = general.totalRealizadas;
         totalSinRealizar.textContent = general.totalNoRealizadas;
+        promedioGeneral.textContent = general.promedio;
+
+        promedio = general.promedio;
 
         pregunta1 = Number.parseInt(general.totalPregunta1) || 0;
         pregunta2 = Number.parseInt(general.totalPregunta2) || 0;
@@ -102,6 +107,7 @@ function generarPDF() {
 async function enviarDatos() {
     const datos = new FormData();
     datos.append('tipo', 'general');
+    datos.append('promedio', promedio);
     datos.append('totalOpcion5Pregunta1', totalOpcion5Pregunta1);
     datos.append('totalOpcion4Pregunta1', totalOpcion4Pregunta1);
     datos.append('totalOpcion3Pregunta1', totalOpcion3Pregunta1);
